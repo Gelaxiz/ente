@@ -1,1 +1,1 @@
-- Protect Hidden content when leaving the app and return to Home.
+- Stop showing the Hidden section after leaving the app or locking the phone while viewing Hidden.
