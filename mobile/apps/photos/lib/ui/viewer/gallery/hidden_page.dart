@@ -88,7 +88,7 @@ class _HiddenPageState extends State<HiddenPage> with WidgetsBindingObserver {
   final _hiddenCollectionsExcludingDefault = <Collection>[];
   bool _hasFilesNeedingCleanup = false;
   bool _hasHiddenFilesOnDevice = false;
-  bool _isExitingAfterFocusLoss = false;
+  bool _isExitingAfterBackgrounding = false;
   late StreamSubscription<CollectionUpdatedEvent>
   _collectionUpdatesSubscription;
   late StreamSubscription<AlbumSortOrderChangeEvent> _albumSortOrderChangeEvent;
@@ -119,10 +119,10 @@ class _HiddenPageState extends State<HiddenPage> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final hasLeftForeground =
         state == AppLifecycleState.hidden || state == AppLifecycleState.paused;
-    if (!hasLeftForeground || !mounted || _isExitingAfterFocusLoss) {
+    if (!hasLeftForeground || !mounted || _isExitingAfterBackgrounding) {
       return;
     }
-    _isExitingAfterFocusLoss = true;
+    _isExitingAfterBackgrounding = true;
     Navigator.of(context)
         .pushAndRemoveUntil<void>(
           PageRouteBuilder<void>(
@@ -181,7 +181,7 @@ class _HiddenPageState extends State<HiddenPage> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    if (!_isExitingAfterFocusLoss) {
+    if (!_isExitingAfterBackgrounding) {
       unawaited(_restoreScreenCoverPreference());
     }
     _collectionUpdatesSubscription.cancel();
