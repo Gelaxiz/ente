@@ -1,0 +1,1 @@
+- Protect Hidden content when leaving the app and return to Home.
