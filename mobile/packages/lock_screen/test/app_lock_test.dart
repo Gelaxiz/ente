@@ -91,18 +91,29 @@ void main() {
     expect(obscurer, findsNothing);
   });
 
-  testWidgets('notifies waiters after unlock', (tester) async {
-    var didUnlock = false;
+  testWidgets('reports whether unlocking required authentication', (
+    tester,
+  ) async {
+    bool? wasAlreadyAuthenticated;
+    bool? wasAuthenticated;
+    bool? wasAuthenticatedAfterUnlock;
+    int? unlockCount;
     await tester.pumpWidget(
       _buildAppLock(
         ThemeMode.light,
         child: Builder(
           builder: (context) => TextButton(
-            onPressed: () {
+            onPressed: () async {
               final appLock = AppLock.of(context)!;
+              unlockCount = appLock.unlockCount;
+              wasAlreadyAuthenticated = await appLock.waitForAppUnlockAfter(
+                unlockCount!,
+              );
               unawaited(appLock.showLockScreen());
               unawaited(
-                appLock.waitUntilUnlocked().then((_) => didUnlock = true),
+                appLock
+                    .waitForAppUnlockAfter(unlockCount!)
+                    .then((result) => wasAuthenticated = result),
               );
             },
             child: const Text('Lock'),
@@ -110,7 +121,15 @@ void main() {
         ),
         lockScreen: Builder(
           builder: (context) => TextButton(
-            onPressed: () => AppLock.of(context)!.didUnlock(),
+            onPressed: () {
+              final appLock = AppLock.of(context)!;
+              appLock.didUnlock();
+              unawaited(
+                appLock
+                    .waitForAppUnlockAfter(unlockCount!)
+                    .then((result) => wasAuthenticatedAfterUnlock = result),
+              );
+            },
             child: const Text('Unlock'),
           ),
         ),
@@ -120,12 +139,14 @@ void main() {
     await tester.tap(find.text('Lock'));
     await tester.pumpAndSettle();
 
-    expect(didUnlock, isFalse);
+    expect(wasAlreadyAuthenticated, isFalse);
+    expect(wasAuthenticated, isNull);
 
     await tester.tap(find.text('Unlock'));
     await tester.pumpAndSettle();
 
-    expect(didUnlock, isTrue);
+    expect(wasAuthenticated, isTrue);
+    expect(wasAuthenticatedAfterUnlock, isTrue);
   });
 }
 

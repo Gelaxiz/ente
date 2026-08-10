@@ -78,7 +78,9 @@ class HiddenPage extends StatefulWidget {
 }
 
 class _HiddenReauthenticationGate extends StatefulWidget {
-  const _HiddenReauthenticationGate();
+  final int? appUnlockCount;
+
+  const _HiddenReauthenticationGate({required this.appUnlockCount});
 
   @override
   State<_HiddenReauthenticationGate> createState() =>
@@ -119,8 +121,18 @@ class _HiddenReauthenticationGateState
   }
 
   Future<void> _authenticate() async {
-    await AppLock.of(context)?.waitUntilUnlocked();
+    final appLock = AppLock.of(context);
+    var authenticatedByAppLock = false;
+    if (appLock != null && widget.appUnlockCount != null) {
+      authenticatedByAppLock = await appLock.waitForAppUnlockAfter(
+        widget.appUnlockCount!,
+      );
+    }
     if (!mounted) {
+      return;
+    }
+    if (authenticatedByAppLock) {
+      Navigator.of(context).pop(true);
       return;
     }
     final authenticated = await LocalAuthenticationService.instance
@@ -205,14 +217,15 @@ class _HiddenPageState extends State<HiddenPage> with WidgetsBindingObserver {
       return;
     }
     _isReauthenticationPending = true;
-    unawaited(_showReauthenticationGate());
+    unawaited(_showReauthenticationGate(AppLock.of(context)?.unlockCount));
   }
 
-  Future<void> _showReauthenticationGate() async {
+  Future<void> _showReauthenticationGate(int? appUnlockCount) async {
     final authenticated = await Navigator.of(context).push<bool>(
       PageRouteBuilder<bool>(
         opaque: true,
-        pageBuilder: (_, _, _) => const _HiddenReauthenticationGate(),
+        pageBuilder: (_, _, _) =>
+            _HiddenReauthenticationGate(appUnlockCount: appUnlockCount),
         transitionDuration: Duration.zero,
         reverseTransitionDuration: Duration.zero,
       ),

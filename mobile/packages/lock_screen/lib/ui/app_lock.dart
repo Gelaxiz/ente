@@ -78,6 +78,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   late ThemeMode _themeMode;
   int? _backgroundedAt;
   Completer<void>? _unlockCompleter;
+  int _unlockCount = 0;
 
   Timer? _backgroundLockLatencyTimer;
 
@@ -247,11 +248,14 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     });
   }
 
-  Future<void> waitUntilUnlocked() {
-    if (!this._isLocked) {
-      return Future<void>.value();
+  int get unlockCount => this._unlockCount;
+
+  /// Waits for a pending lock, then reports whether a newer unlock succeeded.
+  Future<bool> waitForAppUnlockAfter(int unlockCount) async {
+    if (this._isLocked) {
+      await (this._unlockCompleter ??= Completer<void>()).future;
     }
-    return (this._unlockCompleter ??= Completer<void>()).future;
+    return this._unlockCount > unlockCount;
   }
 
   /// Makes sure that [AppLock] shows the [lockScreen] on subsequent app pauses.
@@ -295,6 +299,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   }
 
   void _didUnlockOnAppPaused() {
+    this._unlockCount++;
     this._setLocked(false);
     _navigatorKey.currentState!.pop();
   }
