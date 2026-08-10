@@ -77,6 +77,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   late bool _enabled;
   late ThemeMode _themeMode;
   int? _backgroundedAt;
+  Completer<void>? _unlockCompleter;
 
   Timer? _backgroundLockLatencyTimer;
 
@@ -246,6 +247,13 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     });
   }
 
+  Future<void> waitUntilUnlocked() {
+    if (!this._isLocked) {
+      return Future<void>.value();
+    }
+    return (this._unlockCompleter ??= Completer<void>()).future;
+  }
+
   /// Makes sure that [AppLock] shows the [lockScreen] on subsequent app pauses.
   void enable() {
     setState(() {
@@ -302,5 +310,9 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     setState(() {
       this._isLocked = locked;
     });
+    if (!locked) {
+      this._unlockCompleter?.complete();
+      this._unlockCompleter = null;
+    }
   }
 }

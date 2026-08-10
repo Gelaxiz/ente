@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ente_lock_screen/ui/app_lock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -87,6 +89,43 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(obscurer, findsNothing);
+  });
+
+  testWidgets('notifies waiters after unlock', (tester) async {
+    var didUnlock = false;
+    await tester.pumpWidget(
+      _buildAppLock(
+        ThemeMode.light,
+        child: Builder(
+          builder: (context) => TextButton(
+            onPressed: () {
+              final appLock = AppLock.of(context)!;
+              unawaited(appLock.showLockScreen());
+              unawaited(
+                appLock.waitUntilUnlocked().then((_) => didUnlock = true),
+              );
+            },
+            child: const Text('Lock'),
+          ),
+        ),
+        lockScreen: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => AppLock.of(context)!.didUnlock(),
+            child: const Text('Unlock'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Lock'));
+    await tester.pumpAndSettle();
+
+    expect(didUnlock, isFalse);
+
+    await tester.tap(find.text('Unlock'));
+    await tester.pumpAndSettle();
+
+    expect(didUnlock, isTrue);
   });
 }
 

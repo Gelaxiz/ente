@@ -3,6 +3,7 @@ import "dart:async";
 import "package:collection/collection.dart";
 import "package:ente_lock_screen/local_authentication_service.dart";
 import "package:ente_lock_screen/lock_screen_settings.dart";
+import "package:ente_lock_screen/ui/app_lock.dart";
 import "package:ente_pure_utils/ente_pure_utils.dart";
 import "package:ente_strings/ente_strings.dart";
 import "package:flutter/material.dart";
@@ -118,6 +119,10 @@ class _HiddenReauthenticationGateState
   }
 
   Future<void> _authenticate() async {
+    await AppLock.of(context)?.waitUntilUnlocked();
+    if (!mounted) {
+      return;
+    }
     final authenticated = await LocalAuthenticationService.instance
         .requestLocalAuthentication(
           context,
@@ -155,7 +160,6 @@ class _HiddenReauthenticationGateState
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: const Center(child: CircularProgressIndicator()),
       ),
     );
   }
