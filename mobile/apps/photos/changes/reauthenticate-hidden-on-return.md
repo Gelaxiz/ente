@@ -1,0 +1,1 @@
+- Require authentication when returning to Hidden after leaving the app or locking the phone.
