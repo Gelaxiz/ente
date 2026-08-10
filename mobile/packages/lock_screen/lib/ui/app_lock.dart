@@ -72,13 +72,13 @@ class AppLock extends StatefulWidget {
 class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   static final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
 
-  late bool _didUnlockForAppLaunch;
+  late bool _hasCompletedInitialUnlock;
   late bool _isLocked;
   late bool _enabled;
   late ThemeMode _themeMode;
   int? _backgroundedAt;
-  Completer<void>? _unlockCompleter;
-  int _unlockCount = 0;
+  Completer<void>? _lockClearedCompleter;
+  int _successfulUnlockGeneration = 0;
 
   Timer? _backgroundLockLatencyTimer;
 
@@ -88,7 +88,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
 
-    this._didUnlockForAppLaunch = !this.widget.enabled;
+    this._hasCompletedInitialUnlock = !this.widget.enabled;
     this._isLocked = false;
     this._enabled = this.widget.enabled;
     this._themeMode = this.widget.savedThemeMode;
@@ -109,7 +109,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     }
 
     if (state == AppLifecycleState.paused &&
-        (!this._isLocked && this._didUnlockForAppLaunch)) {
+        (!this._isLocked && this._hasCompletedInitialUnlock)) {
       this._backgroundedAt = DateTime.now().millisecondsSinceEpoch;
       this._setLocked(true);
       this._backgroundLockLatencyTimer = Timer(
@@ -218,10 +218,11 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   /// objects, services or databases are already instantiated before using them.
   void didUnlock([Object? args]) {
     this.widget.onUnlock?.call();
-    if (this._didUnlockForAppLaunch) {
-      this._didUnlockOnAppPaused();
+    this._successfulUnlockGeneration++;
+    if (this._hasCompletedInitialUnlock) {
+      this._completeSubsequentUnlock();
     } else {
-      this._didUnlockOnAppLaunch(args);
+      this._completeInitialUnlock(args);
     }
   }
 
@@ -248,14 +249,15 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     });
   }
 
-  int get unlockCount => this._unlockCount;
+  int get successfulUnlockGeneration => this._successfulUnlockGeneration;
 
-  /// Waits for a pending lock, then reports whether a newer unlock succeeded.
-  Future<bool> waitForAppUnlockAfter(int unlockCount) async {
+  /// If App Lock is active, waits for it to clear, then reports whether a
+  /// successful unlock occurred after [generation].
+  Future<bool> waitForSuccessfulUnlockAfter(int generation) async {
     if (this._isLocked) {
-      await (this._unlockCompleter ??= Completer<void>()).future;
+      await (this._lockClearedCompleter ??= Completer<void>()).future;
     }
-    return this._unlockCount > unlockCount;
+    return this._successfulUnlockGeneration > generation;
   }
 
   /// Makes sure that [AppLock] shows the [lockScreen] on subsequent app pauses.
@@ -290,16 +292,15 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     );
   }
 
-  void _didUnlockOnAppLaunch(Object? args) {
-    this._didUnlockForAppLaunch = true;
+  void _completeInitialUnlock(Object? args) {
+    this._hasCompletedInitialUnlock = true;
     _navigatorKey.currentState!.pushReplacementNamed(
       '/unlocked',
       arguments: args,
     );
   }
 
-  void _didUnlockOnAppPaused() {
-    this._unlockCount++;
+  void _completeSubsequentUnlock() {
     this._setLocked(false);
     _navigatorKey.currentState!.pop();
   }
@@ -316,8 +317,8 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
       this._isLocked = locked;
     });
     if (!locked) {
-      this._unlockCompleter?.complete();
-      this._unlockCompleter = null;
+      this._lockClearedCompleter?.complete();
+      this._lockClearedCompleter = null;
     }
   }
 }

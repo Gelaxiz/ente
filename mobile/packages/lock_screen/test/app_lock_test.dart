@@ -1,10 +1,21 @@
 import 'dart:async';
 
+import 'package:ente_lock_screen/lock_screen_host.dart';
+import 'package:ente_lock_screen/lock_screen_settings.dart';
 import 'package:ente_lock_screen/ui/app_lock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUpAll(() async {
+    SharedPreferences.setMockInitialValues({
+      LockScreenSettings.keyHasMigratedLockScreenChanges: true,
+      LockScreenSettings.autoLockTime: 5000,
+    });
+    await LockScreenSettings.instance.init(_TestLockScreenHost());
+  });
+
   testWidgets('updates theme mode after startup', (tester) async {
     await tester.pumpWidget(
       _buildAppLock(
@@ -91,63 +102,91 @@ void main() {
     expect(obscurer, findsNothing);
   });
 
-  testWidgets('reports whether unlocking required authentication', (
+  testWidgets('reports no successful unlock after an unchanged generation', (
     tester,
   ) async {
-    bool? wasAlreadyAuthenticated;
-    bool? wasAuthenticated;
-    bool? wasAuthenticatedAfterUnlock;
-    int? unlockCount;
     await tester.pumpWidget(
-      _buildAppLock(
-        ThemeMode.light,
-        child: Builder(
-          builder: (context) => TextButton(
-            onPressed: () async {
-              final appLock = AppLock.of(context)!;
-              unlockCount = appLock.unlockCount;
-              wasAlreadyAuthenticated = await appLock.waitForAppUnlockAfter(
-                unlockCount!,
-              );
-              unawaited(appLock.showLockScreen());
-              unawaited(
-                appLock
-                    .waitForAppUnlockAfter(unlockCount!)
-                    .then((result) => wasAuthenticated = result),
-              );
-            },
-            child: const Text('Lock'),
-          ),
-        ),
-        lockScreen: Builder(
-          builder: (context) => TextButton(
-            onPressed: () {
-              final appLock = AppLock.of(context)!;
-              appLock.didUnlock();
-              unawaited(
-                appLock
-                    .waitForAppUnlockAfter(unlockCount!)
-                    .then((result) => wasAuthenticatedAfterUnlock = result),
-              );
-            },
-            child: const Text('Unlock'),
-          ),
-        ),
-      ),
+      _buildAppLock(ThemeMode.light, child: const Text('Unlocked content')),
     );
 
-    await tester.tap(find.text('Lock'));
-    await tester.pumpAndSettle();
+    final appLock = AppLock.of(tester.element(find.text('Unlocked content')))!;
+    final generation = appLock.successfulUnlockGeneration;
 
-    expect(wasAlreadyAuthenticated, isFalse);
-    expect(wasAuthenticated, isNull);
-
-    await tester.tap(find.text('Unlock'));
-    await tester.pumpAndSettle();
-
-    expect(wasAuthenticated, isTrue);
-    expect(wasAuthenticatedAfterUnlock, isTrue);
+    expect(await appLock.waitForSuccessfulUnlockAfter(generation), isFalse);
   });
+
+  testWidgets('waits for App Lock and reports a successful unlock', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _buildAppLock(ThemeMode.light, child: const Text('Unlocked content')),
+    );
+
+    final appLock = AppLock.of(tester.element(find.text('Unlocked content')))!;
+    final generation = appLock.successfulUnlockGeneration;
+    unawaited(appLock.showLockScreen());
+    final unlockResult = appLock.waitForSuccessfulUnlockAfter(generation);
+
+    await tester.pumpAndSettle();
+
+    var completed = false;
+    unawaited(unlockResult.then((_) => completed = true));
+    await tester.pump();
+    expect(completed, isFalse);
+
+    appLock.didUnlock();
+    await tester.pumpAndSettle();
+
+    expect(await unlockResult, isTrue);
+  });
+
+  testWidgets('reports an unlock that completed before the check', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _buildAppLock(ThemeMode.light, child: const Text('Unlocked content')),
+    );
+
+    final appLock = AppLock.of(tester.element(find.text('Unlocked content')))!;
+    final generation = appLock.successfulUnlockGeneration;
+    unawaited(appLock.showLockScreen());
+    await tester.pumpAndSettle();
+
+    appLock.didUnlock();
+    await tester.pumpAndSettle();
+
+    expect(await appLock.waitForSuccessfulUnlockAfter(generation), isTrue);
+  });
+
+  testWidgets('reports no unlock when the grace period clears App Lock', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _buildAppLock(ThemeMode.light, child: const Text('Unlocked content')),
+    );
+
+    final appLock = AppLock.of(tester.element(find.text('Unlocked content')))!;
+    appLock.enable();
+    final generation = appLock.successfulUnlockGeneration;
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    await tester.pump();
+
+    final unlockResult = appLock.waitForSuccessfulUnlockAfter(generation);
+
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+
+    expect(await unlockResult, isFalse);
+  });
+}
+
+class _TestLockScreenHost implements LockScreenHost {
+  @override
+  bool isLoggedIn() => true;
+
+  @override
+  Future<void> logout() async {}
 }
 
 Widget _buildAppLock(

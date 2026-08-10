@@ -32,13 +32,13 @@ import "package:photos/ui/viewer/gallery/state/gallery_boundaries_provider.dart"
 import "package:photos/ui/viewer/gallery/state/gallery_files_inherited_widget.dart";
 import "package:photos/ui/viewer/gallery/state/selection_state.dart";
 
-Future<void> _enableScreenCoverForHidden() async {
+Future<void> _temporarilyEnableScreenCover() async {
   if (!LockScreenSettings.instance.getShouldHideAppContent()) {
     await LockScreenSettings.instance.setHideAppContent(true, persist: false);
   }
 }
 
-Future<void> _restoreScreenCoverPreference() async {
+Future<void> _restoreConfiguredScreenCover() async {
   if (!LockScreenSettings.instance.getShouldHideAppContent()) {
     await LockScreenSettings.instance.setHideAppContent(false, persist: false);
   }
@@ -57,7 +57,8 @@ void _returnToHome(BuildContext context) {
       )
       .ignore();
   WidgetsBinding.instance.addPostFrameCallback((_) {
-    unawaited(_restoreScreenCoverPreference());
+    // Keep Hidden covered until Home has rendered.
+    unawaited(_restoreConfiguredScreenCover());
   });
 }
 
@@ -77,18 +78,20 @@ class HiddenPage extends StatefulWidget {
   State<HiddenPage> createState() => _HiddenPageState();
 }
 
-class _HiddenReauthenticationGate extends StatefulWidget {
-  final int? appUnlockCount;
+class _HiddenResumeAuthenticationPage extends StatefulWidget {
+  final int appLockUnlockGenerationAtBackgrounding;
 
-  const _HiddenReauthenticationGate({required this.appUnlockCount});
+  const _HiddenResumeAuthenticationPage({
+    required this.appLockUnlockGenerationAtBackgrounding,
+  });
 
   @override
-  State<_HiddenReauthenticationGate> createState() =>
-      _HiddenReauthenticationGateState();
+  State<_HiddenResumeAuthenticationPage> createState() =>
+      _HiddenResumeAuthenticationPageState();
 }
 
-class _HiddenReauthenticationGateState
-    extends State<_HiddenReauthenticationGate>
+class _HiddenResumeAuthenticationPageState
+    extends State<_HiddenResumeAuthenticationPage>
     with WidgetsBindingObserver {
   bool _authenticationStarted = false;
 
@@ -121,13 +124,10 @@ class _HiddenReauthenticationGateState
   }
 
   Future<void> _authenticate() async {
-    final appLock = AppLock.of(context);
-    var authenticatedByAppLock = false;
-    if (appLock != null && widget.appUnlockCount != null) {
-      authenticatedByAppLock = await appLock.waitForAppUnlockAfter(
-        widget.appUnlockCount!,
-      );
-    }
+    final appLock = AppLock.of(context)!;
+    final authenticatedByAppLock = await appLock.waitForSuccessfulUnlockAfter(
+      widget.appLockUnlockGenerationAtBackgrounding,
+    );
     if (!mounted) {
       return;
     }
@@ -147,12 +147,8 @@ class _HiddenReauthenticationGateState
     if (authenticated) {
       Navigator.of(context).pop(true);
     } else {
-      _goHome();
+      _returnToHome(context);
     }
-  }
-
-  void _goHome() {
-    _returnToHome(context);
   }
 
   @override
@@ -167,7 +163,7 @@ class _HiddenReauthenticationGateState
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) {
-          _goHome();
+          _returnToHome(context);
         }
       },
       child: Scaffold(
@@ -182,7 +178,7 @@ class _HiddenPageState extends State<HiddenPage> with WidgetsBindingObserver {
   final _hiddenCollectionsExcludingDefault = <Collection>[];
   bool _hasFilesNeedingCleanup = false;
   bool _hasHiddenFilesOnDevice = false;
-  bool _isReauthenticationPending = false;
+  bool _isReauthenticationRouteActive = false;
   late StreamSubscription<CollectionUpdatedEvent>
   _collectionUpdatesSubscription;
   late StreamSubscription<AlbumSortOrderChangeEvent> _albumSortOrderChangeEvent;
@@ -191,7 +187,7 @@ class _HiddenPageState extends State<HiddenPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    unawaited(_enableScreenCoverForHidden());
+    unawaited(_temporarilyEnableScreenCover());
     _collectionUpdatesSubscription = Bus.instance
         .on<CollectionUpdatedEvent>()
         .listen((event) {
@@ -211,21 +207,29 @@ class _HiddenPageState extends State<HiddenPage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    final hasLeftForeground =
+    final isLeavingForeground =
         state == AppLifecycleState.hidden || state == AppLifecycleState.paused;
-    if (!hasLeftForeground || !mounted || _isReauthenticationPending) {
+    if (!isLeavingForeground || _isReauthenticationRouteActive) {
       return;
     }
-    _isReauthenticationPending = true;
-    unawaited(_showReauthenticationGate(AppLock.of(context)?.unlockCount));
+    _isReauthenticationRouteActive = true;
+    unawaited(
+      _showResumeAuthenticationPage(
+        AppLock.of(context)!.successfulUnlockGeneration,
+      ),
+    );
   }
 
-  Future<void> _showReauthenticationGate(int? appUnlockCount) async {
+  Future<void> _showResumeAuthenticationPage(
+    int appLockUnlockGenerationAtBackgrounding,
+  ) async {
     final authenticated = await Navigator.of(context).push<bool>(
       PageRouteBuilder<bool>(
         opaque: true,
-        pageBuilder: (_, _, _) =>
-            _HiddenReauthenticationGate(appUnlockCount: appUnlockCount),
+        pageBuilder: (_, _, _) => _HiddenResumeAuthenticationPage(
+          appLockUnlockGenerationAtBackgrounding:
+              appLockUnlockGenerationAtBackgrounding,
+        ),
         transitionDuration: Duration.zero,
         reverseTransitionDuration: Duration.zero,
       ),
@@ -233,7 +237,7 @@ class _HiddenPageState extends State<HiddenPage> with WidgetsBindingObserver {
     if (!mounted || authenticated != true) {
       return;
     }
-    _isReauthenticationPending = false;
+    _isReauthenticationRouteActive = false;
   }
 
   Future<void> _checkForCleanupNeeded() async {
@@ -281,8 +285,8 @@ class _HiddenPageState extends State<HiddenPage> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    if (!_isReauthenticationPending) {
-      unawaited(_restoreScreenCoverPreference());
+    if (!_isReauthenticationRouteActive) {
+      unawaited(_restoreConfiguredScreenCover());
     }
     _collectionUpdatesSubscription.cancel();
     _albumSortOrderChangeEvent.cancel();
