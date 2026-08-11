@@ -463,6 +463,9 @@ class UserService {
             clientPackage: _config.appIdentity.clientPackageName,
           );
         } else if (twoFASessionID.isNotEmpty) {
+          if (_config.appIdentity.app == "locker") {
+            await _setTwoFactorEnabled(true);
+          }
           page = TwoFactorAuthenticationPage(twoFASessionID);
         } else {
           await _saveConfiguration(response);
@@ -807,6 +810,9 @@ class UserService {
           clientPackage: _config.appIdentity.clientPackageName,
         );
       } else if (twoFASessionID.isNotEmpty) {
+        if (_config.appIdentity.app == "locker") {
+          await _setTwoFactorEnabled(true);
+        }
         page = TwoFactorAuthenticationPage(twoFASessionID);
       } else {
         await _saveConfiguration(response);

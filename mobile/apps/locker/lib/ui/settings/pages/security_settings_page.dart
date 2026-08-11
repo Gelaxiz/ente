@@ -96,7 +96,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
 
   Future<void> _refreshSecurityDetails() async {
     try {
-      await UserService.instance.getUserDetailsV2(memoryCount: false);
+      await UserService.instance.getUserDetailsV2(memoryCount: true);
       if (mounted) {
         setState(() {});
       }
@@ -115,14 +115,15 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
       return;
     }
 
-    if (UserService.instance.hasEnabledTwoFactor()) {
-      await _confirmDisableTwoFactor(context);
+    final isTwoFactorEnabled = UserService.instance.hasEnabledTwoFactor();
+    if (isTwoFactorEnabled) {
+      await _disableTwoFactor(context);
     } else {
       await UserService.instance.setupTwoFactor(context);
     }
   }
 
-  Future<void> _confirmDisableTwoFactor(BuildContext context) async {
+  Future<void> _disableTwoFactor(BuildContext context) async {
     final strings = context.strings;
     await showBottomSheetComponent<void>(
       context: context,
