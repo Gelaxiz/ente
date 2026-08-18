@@ -107,6 +107,7 @@ const SlideView: React.FC<SlideViewProps> = ({ url }) => {
 
 const SlideView_ = styled("div")`
     height: 100vh;
+    overflow: hidden;
 
     background-size: cover;
     background-position: center;
