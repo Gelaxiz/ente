@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Ente.Auth.App/Ente.Auth.App.csproj">
+      <Platform Project="x64" />
+    </Project>
+    <Project Path="src/Ente.Auth.Core/Ente.Auth.Core.csproj" />
+    <Project Path="src/Ente.Auth.Infrastructure/Ente.Auth.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Ente.Auth.Core.Tests/Ente.Auth.Core.Tests.csproj" />
+    <Project Path="tests/Ente.Auth.Infrastructure.Tests/Ente.Auth.Infrastructure.Tests.csproj" />
+  </Folder>
+</Solution>

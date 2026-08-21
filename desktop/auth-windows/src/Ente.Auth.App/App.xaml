@@ -1,0 +1,41 @@
+<Application
+    x:Class="Ente.Auth.App.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Ente.Auth.App"
+    xmlns:tb="using:H.NotifyIcon">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Color x:Key="EntePurple">#8F33D6</Color>
+            <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource EntePurple}" />
+            <SolidColorBrush x:Key="QuietFillBrush" Color="#0F000000" />
+            <SolidColorBrush x:Key="QuietStrokeBrush" Color="#18000000" />
+            <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+            <XamlUICommand x:Key="OpenQuickPanelCommand" Label="Open quick panel" />
+            <XamlUICommand x:Key="OpenWindowCommand" Label="Open full app" />
+            <XamlUICommand x:Key="LockCommand" Label="Lock" />
+            <XamlUICommand x:Key="ExitCommand" Label="Quit" />
+
+            <tb:TaskbarIcon x:Key="TrayIcon"
+                            ToolTipText="Ente Auth Community"
+                            IconSource="/Assets/EnteAuth.ico"
+                            ContextMenuMode="SecondWindow"
+                            NoLeftClickDelay="True"
+                            LeftClickCommand="{StaticResource OpenQuickPanelCommand}">
+                <tb:TaskbarIcon.ContextFlyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem Command="{StaticResource OpenWindowCommand}" />
+                        <MenuFlyoutItem Command="{StaticResource LockCommand}" />
+                        <MenuFlyoutSeparator />
+                        <MenuFlyoutItem Command="{StaticResource ExitCommand}" />
+                    </MenuFlyout>
+                </tb:TaskbarIcon.ContextFlyout>
+            </tb:TaskbarIcon>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,34 @@
+name: Ente Auth Community Windows
+
+on:
+  pull_request:
+    paths:
+      - "desktop/auth-windows/**"
+      - ".github/workflows/auth-windows.yml"
+  push:
+    paths:
+      - "desktop/auth-windows/**"
+      - ".github/workflows/auth-windows.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: desktop/auth-windows
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Restore
+        run: dotnet restore EnteAuthCommunity.slnx -p:Platform=x64
+      - name: Test core
+        run: dotnet test tests/Ente.Auth.Core.Tests/Ente.Auth.Core.Tests.csproj --no-restore
+      - name: Test infrastructure
+        run: dotnet test tests/Ente.Auth.Infrastructure.Tests/Ente.Auth.Infrastructure.Tests.csproj --no-restore
+      - name: Build Windows app
+        run: dotnet build src/Ente.Auth.App/Ente.Auth.App.csproj --no-restore -p:Platform=x64

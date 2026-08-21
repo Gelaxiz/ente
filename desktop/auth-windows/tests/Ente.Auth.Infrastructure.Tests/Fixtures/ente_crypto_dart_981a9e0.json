@@ -1,0 +1,12 @@
+{
+  "producer": "ente_crypto_dart",
+  "revision": "981a9e0f4a227023991af3332ef0e6ab6d14a1c2",
+  "entityKey": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=",
+  "entityPlaintext": "b3RwYXV0aDovL3RvdHAvRW50ZSUyMEludGVyb3A6cGVyc29uJTQwZXhhbXBsZS50ZXN0P3NlY3JldD1KQlNXWTNEUEVIUEszUFhQJmlzc3Vlcj1FbnRlJTIwSW50ZXJvcCZhbGdvcml0aG09U0hBMSZkaWdpdHM9NiZwZXJpb2Q9MzA=",
+  "entityHeader": "GEKlQ5QUmUKqCVgYMO8BlWUE8McgtFMO",
+  "entityCiphertext": "FDQEJ3d1M4D/pUTH2+ucV7mwDsE1Be4p6z6/Pi7ZZftU2cHC+aieD4+BNoWzGJV7k0+4m1imuR+SqOfqg3vCUMFgQwmCKU+5copa2ZDm6FL3pM8lGgkVe5E7sT5TRN+30MMsaJ+MzrZ3oUVtlBdr/Sc4kG7SWg9nxa9fWdEo8Ct+b3vezkbTnqpNpf46nKMw3PvWoA==",
+  "masterKey": "//79/Pv6+fj39vX08/Lx8O/u7ezr6uno5+bl5OPi4eA=",
+  "authenticatorKey": "AAcOFRwjKjE4P0ZNVFtiaXB3foWMk5qhqK+2vcTL0tk=",
+  "wrappedKeyNonce": "XQIxDddedOspVcZnxVLB41wkf6d3fZDh",
+  "wrappedKeyCiphertext": "fWHaBALAYjGWzQovIHFal5pAkh5lZ8SeI3X3auzQNKYpn2clDhVqUcRhZ7FK68vS"
+}

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "kdfParams": {
+    "memLimit": 8388608,
+    "opsLimit": 1,
+    "salt": "oKGio6SlpqeoqaqrrK2urw=="
+  },
+  "encryptedData": "ZTxsno1DV0b2Y4gDXTIUJ6yQ2Rt6DScPR7ZdCKRhzn2Ub8XrW0Hy3ImPMDIs1MnzKEVmZ9dnaIwuCx/0MEBoHwSzAJEOCwaL0kzCYYAQBAwn",
+  "encryptionNonce": "66m0N1WRmCh2UZepM156xX26S6MdYy4X"
+}

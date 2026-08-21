@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-21T00:00:00+03:00",
+  "title": "Design System: Ente Auth Community for Windows",
+  "extensions": {
+    "colorMeta": {
+      "ente-purple": {
+        "role": "primary",
+        "displayName": "Ente Signal Purple",
+        "canonical": "#8F33D6",
+        "tonalRamp": ["#24102F", "#3D1554", "#5B1D80", "#7726AA", "#8F33D6", "#B16BE6", "#D4A9F2", "#F2E5FB"]
+      },
+      "quiet-fill": {
+        "role": "neutral",
+        "displayName": "Quiet Fill",
+        "canonical": "#0F000000",
+        "tonalRamp": ["#171717", "#2E2E2E", "#494949", "#666666", "#858585", "#A8A8A8", "#D0D0D0", "#F4F4F4"]
+      },
+      "quiet-stroke": {
+        "role": "neutral",
+        "displayName": "Quiet Stroke",
+        "canonical": "#18000000",
+        "tonalRamp": ["#121212", "#292929", "#444444", "#626262", "#818181", "#A5A5A5", "#CECECE", "#F3F3F3"]
+      }
+    },
+    "typographyMeta": {
+      "title": { "displayName": "Surface title", "purpose": "Names the current operational surface." },
+      "body": { "displayName": "Windows body", "purpose": "Controls, account identity, and explanatory text." },
+      "code": { "displayName": "OTP readout", "purpose": "Stable-width authenticator codes only." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "native-fast", "value": "120ms cubic-bezier(0.1, 0.9, 0.2, 1)", "purpose": "Compact state changes and copy confirmation." },
+      { "name": "native-panel", "value": "180ms cubic-bezier(0.1, 0.9, 0.2, 1)", "purpose": "Tray panel and navigation transitions when motion is allowed." }
+    ],
+    "breakpoints": [
+      { "name": "compact-window", "value": "620px" },
+      { "name": "default-window", "value": "820px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single emphasized action on an operational surface.",
+      "html": "<button class=\"ds-primary\">Add code</button>",
+      "css": ".ds-primary{background:#8F33D6;color:#fff;border:0;border-radius:4px;padding:8px 16px;font:600 14px 'Segoe UI',sans-serif}.ds-primary:hover{background:#7C2ABB}.ds-primary:focus-visible{outline:2px solid #111;outline-offset:2px}.ds-primary:active{background:#682299}"
+    },
+    {
+      "name": "Search field",
+      "kind": "input",
+      "refersTo": "search-field",
+      "description": "The persistent entry point to the code ledger.",
+      "html": "<input class=\"ds-search\" aria-label=\"Search accounts\" placeholder=\"Search accounts\">",
+      "css": ".ds-search{height:44px;width:320px;padding:0 12px;border:1px solid #8A8A8A;border-radius:4px;background:#fff;color:#111;font:400 14px 'Segoe UI',sans-serif}.ds-search:hover{border-color:#5F5F5F}.ds-search:focus-visible{outline:2px solid #8F33D6;outline-offset:1px}"
+    },
+    {
+      "name": "Code ledger row",
+      "kind": "custom",
+      "refersTo": "code-row",
+      "description": "Account identity, current OTP, countdown, and copy action in one line.",
+      "html": "<div class=\"ds-code-row\"><span><b>Example</b><small>alice@example.com</small></span><code>123 456</code><button aria-label=\"Copy code\">Copy</button></div>",
+      "css": ".ds-code-row{display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center;padding:10px 12px;border-bottom:1px solid #E5E5E5;font:400 14px 'Segoe UI',sans-serif}.ds-code-row span{display:grid;gap:2px}.ds-code-row small{color:#666}.ds-code-row code{font:600 23px 'Cascadia Mono',monospace;letter-spacing:.06em}.ds-code-row button{min-width:40px;min-height:40px}.ds-code-row:focus-within{outline:2px solid #8F33D6;outline-offset:-2px}"
+    },
+    {
+      "name": "Compact navigation",
+      "kind": "nav",
+      "description": "Stable Windows navigation for Codes and Settings; destinations appear only when implemented.",
+      "html": "<nav class=\"ds-nav\"><button aria-current=\"page\">Codes</button><button>Settings</button></nav>",
+      "css": ".ds-nav{display:flex;gap:4px;padding:4px;background:#F5F5F5;font:400 14px 'Segoe UI',sans-serif}.ds-nav button{border:0;border-radius:4px;padding:9px 12px;background:transparent}.ds-nav button:hover{background:#E9E9E9}.ds-nav button[aria-current=page]{background:#E4D2F2;font-weight:600}.ds-nav button:focus-visible{outline:2px solid #111}"
+    },
+    {
+      "name": "Tray verification note",
+      "kind": "custom",
+      "description": "Quiet confirmation that the current quick-panel session passed Windows Hello.",
+      "html": "<p class=\"ds-verified\">Windows Hello verified · click a row to copy</p>",
+      "css": ".ds-verified{margin:0;color:#666;font:400 11px 'Segoe UI',sans-serif}.ds-verified:focus-visible{outline:2px solid #8F33D6;outline-offset:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Code Ledger",
+    "overview": "The interface behaves like a precise native instrument that happens to hold authenticator codes. It is calm, dense enough for repeat use, and deliberately avoids a dashboard of decorative cards. Ente's purple remains recognizable but rare: it measures time and confirms primary intent rather than coloring whole surfaces.",
+    "keyCharacteristics": [
+      "A single readable ledger instead of a grid of cards.",
+      "Native Windows chrome and system theme behavior.",
+      "Account identity on the left, current code and time on the right.",
+      "Secondary features remain quiet until requested.",
+      "Privacy state is explicit and never encoded by color alone."
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "Purple communicates the current action or time-sensitive state; it does not compete with account content.", "section": "colors" },
+      { "name": "The Numeric Reserve Rule", "body": "Cascadia Mono never labels navigation, settings, or general content.", "section": "typography" },
+      { "name": "The Flat-at-Rest Rule", "body": "Do not wrap every code or settings row in a lifted container.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep search and the current OTP legible within the first scan.",
+      "Do use native theme and high-contrast resources for system-owned color roles.",
+      "Do pair every icon-only action with a tooltip and accessible name.",
+      "Do clear sensitive tray content when the app locks.",
+      "Do keep motion short, interruptible, and absent under reduced-motion settings."
+    ],
+    "donts": [
+      "Don't turn authenticator entries into same-sized floating cards.",
+      "Don't expose issuer, account, or code content before Windows Hello verifies the tray request.",
+      "Don't use purple as a general background or visual decoration.",
+      "Don't hide Quit behind window close; closing hides to tray and Quit remains explicit.",
+      "Don't imply that this community fork is endorsed or audited by Ente."
+    ]
+  }
+}
