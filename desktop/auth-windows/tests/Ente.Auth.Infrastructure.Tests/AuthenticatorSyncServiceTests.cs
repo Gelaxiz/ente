@@ -15,7 +15,7 @@ public sealed class AuthenticatorSyncServiceTests : IDisposable
     public async Task PullsRemoteChangesBeforeUploadingLocalChanges()
     {
         Directory.CreateDirectory(_directory);
-        var database = $"Data Source={Path.Combine(_directory, "auth.db")}";
+        var database = $"Data Source={Path.Combine(_directory, "auth.db")};Pooling=False";
         var protector = new ReversibleProtector();
         var repository = new SqliteOtpRepository(database, protector);
         var state = new SqliteAuthenticatorSyncStateStore(database, protector);

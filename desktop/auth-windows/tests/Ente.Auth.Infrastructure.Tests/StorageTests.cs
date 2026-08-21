@@ -27,7 +27,7 @@ public sealed class StorageTests : IDisposable
     {
         Directory.CreateDirectory(_directory);
         var databasePath = Path.Combine(_directory, "auth.db");
-        var repository = new SqliteOtpRepository($"Data Source={databasePath}", new TestProtector());
+        var repository = new SqliteOtpRepository($"Data Source={databasePath};Pooling=False", new TestProtector());
         var account = new OtpAccount(Guid.NewGuid(), "Example", "alice", "JBSWY3DPEHPK3PXP", IsPinned: true);
         await repository.UpsertAsync(account);
 

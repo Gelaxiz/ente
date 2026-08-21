@@ -11,7 +11,7 @@ public sealed class SyncStateStoreTests : IDisposable
     public async Task LocalCreateUploadAndDeleteProduceExpectedSyncQueue()
     {
         Directory.CreateDirectory(_directory);
-        var database = $"Data Source={Path.Combine(_directory, "auth.db")}";
+        var database = $"Data Source={Path.Combine(_directory, "auth.db")};Pooling=False";
         var protector = new ReversibleProtector();
         var repository = new SqliteOtpRepository(database, protector);
         var sync = new SqliteAuthenticatorSyncStateStore(database, protector);
@@ -34,7 +34,7 @@ public sealed class SyncStateStoreTests : IDisposable
     public async Task RemoteUpdateAndDeletionDoNotEchoBackToServer()
     {
         Directory.CreateDirectory(_directory);
-        var database = $"Data Source={Path.Combine(_directory, "auth.db")}";
+        var database = $"Data Source={Path.Combine(_directory, "auth.db")};Pooling=False";
         var protector = new ReversibleProtector();
         var repository = new SqliteOtpRepository(database, protector);
         var sync = new SqliteAuthenticatorSyncStateStore(database, protector);
@@ -53,7 +53,7 @@ public sealed class SyncStateStoreTests : IDisposable
     {
         Directory.CreateDirectory(_directory);
         var sync = new SqliteAuthenticatorSyncStateStore(
-            $"Data Source={Path.Combine(_directory, "auth.db")}", new ReversibleProtector());
+            $"Data Source={Path.Combine(_directory, "auth.db")};Pooling=False", new ReversibleProtector());
 
         await sync.BindAccountAsync(42);
         await sync.BindAccountAsync(42);
