@@ -57,7 +57,8 @@ public sealed partial class App : Application
             Environment.Exit(0);
             return;
         }
-        current.Activated += (_, _) => DispatcherQueue.TryEnqueue(async () => await ShowMainWindowAsync());
+        var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+        current.Activated += (_, _) => dispatcherQueue.TryEnqueue(async () => await ShowMainWindowAsync());
 
         var dataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "EnteAuthCommunity");
         Directory.CreateDirectory(dataPath);
