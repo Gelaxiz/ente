@@ -38,7 +38,7 @@ public sealed partial class App : Application
     private static readonly SemaphoreSlim PresenceGateLock = new(1, 1);
     private static readonly SemaphoreSlim SyncLifecycleGate = new(1, 1);
     private static CancellationTokenSource _syncCancellation = new();
-    private static bool _isLocked;
+    private static bool _isLocked = true;
 
     public static AppSettings CurrentSettings { get; private set; } = new();
     public static bool IsQuitting { get; private set; }
@@ -75,9 +75,9 @@ public sealed partial class App : Application
         var crypto = new LibsodiumEnteCryptoCodec();
         _sessionStore = new DpapiEnteSessionStore(Path.Combine(dataPath, "ente-session.bin"), protector);
         _authenticatorKeyStore = new DpapiAuthenticatorKeyStore(Path.Combine(dataPath, "authenticator-key.bin"), protector);
-        var accountHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.com/") };
+        var accountHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.io/") };
         _authenticationService = new EnteAuthenticationService(new EnteAccountClient(accountHttp), crypto);
-        var authenticatorHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.com/") };
+        var authenticatorHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.io/") };
         var authenticatorClient = new EnteAuthenticatorClient(authenticatorHttp, () => _session?.AuthToken);
         _authenticatorKeyManager = new EnteAuthenticatorKeyManager(authenticatorClient, crypto, _authenticatorKeyStore);
         _syncStateStore = new SqliteAuthenticatorSyncStateStore(connectionString, protector);
@@ -162,11 +162,12 @@ public sealed partial class App : Application
     {
         if (_quickViewModel is null) return;
         _quickPanel?.Hide();
-        if (!await VerifyPresenceAsync("Open your authenticator codes"))
+        if (_isLocked && !await VerifyPresenceAsync("Open your authenticator codes"))
         {
             ShowPresenceFailure();
             return;
         }
+        _isLocked = false;
         _quickPanel ??= new QuickPanelWindow(_quickViewModel);
         await _quickPanel.PrepareAsync();
         _quickPanel.Show();
