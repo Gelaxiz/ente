@@ -14,6 +14,7 @@ using H.NotifyIcon;
 using Microsoft.UI.Windowing;
 using Microsoft.Windows.AppLifecycle;
 using Windows.ApplicationModel;
+using AppInstance = Microsoft.Windows.AppLifecycle.AppInstance;
 
 namespace Ente.Auth.App;
 
