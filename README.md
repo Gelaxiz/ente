@@ -43,7 +43,6 @@ dotnet test .\tests\Ente.Auth.Infrastructure.Tests\Ente.Auth.Infrastructure.Test
 dotnet build .\src\Ente.Auth.App\Ente.Auth.App.csproj -p:Platform=x64
 ```
 
-The MSIX manifest contains a development publisher identity. Public packages must replace it with the release certificate's subject and must be signed.
 
 ## Compatibility gates
 
