@@ -2,6 +2,7 @@ import "dart:async";
 import 'dart:io';
 
 import 'package:adaptive_theme/adaptive_theme.dart';
+import "package:ente_photos_platform/ente_photos_platform.dart";
 import "package:ente_pure_utils/ente_pure_utils.dart";
 import "package:ente_strings/ente_strings.dart";
 import 'package:flutter/material.dart';
@@ -64,6 +65,7 @@ class _EnteAppState extends State<EnteApp> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    _startupMarker("dart.app.init_state");
     _logger.info('init App');
     super.initState();
     locale = widget.locale;
@@ -240,6 +242,7 @@ class _EnteAppState extends State<EnteApp> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    _startupMarker("dart.app.dispose");
     WidgetsBinding.instance.removeObserver(this);
     _memoriesChangedSubscription.cancel();
     _peopleChangedSubscription.cancel();
@@ -251,8 +254,12 @@ class _EnteAppState extends State<EnteApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _startupMarker("dart.lifecycle.state", details: {"state": state.name});
     final String stateChangeReason = 'app -> $state';
     if (state == AppLifecycleState.resumed) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _startupMarker("dart.lifecycle.resume_post_frame");
+      });
       final lastAppOpenTime = AppLifecycleService.instance.getLastAppOpenTime();
       AppLifecycleService.instance.onAppInForeground(
         stateChangeReason + ': sync now',
@@ -265,6 +272,16 @@ class _EnteAppState extends State<EnteApp> with WidgetsBindingObserver {
     } else {
       AppLifecycleService.instance.onAppInBackground(stateChangeReason);
     }
+  }
+
+  void _startupMarker(String event, {Map<String, Object?> details = const {}}) {
+    unawaited(
+      StartupDiagnosticsClient.instance.mark(
+        event,
+        role: "fg",
+        details: details,
+      ),
+    );
   }
 
   Future<void> _reloadCachesUpdatedInBackground(

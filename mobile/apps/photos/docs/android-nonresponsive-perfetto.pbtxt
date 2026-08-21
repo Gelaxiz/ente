@@ -1,0 +1,174 @@
+# proto-message: perfetto.protos.TraceConfig
+# Retail-safe Android 16 profile for the On-this-day notification black-screen
+# reproduction. The trace stays in memory during capture so trace writes do
+# not add disk I/O to the launch/viewer window. Validate trace loss/overwrite
+# during preflight.
+
+duration_ms: 180000
+flush_period_ms: 10000
+flush_timeout_ms: 5000
+
+buffers { size_kb: 131072 fill_policy: RING_BUFFER }
+buffers { size_kb: 32768 fill_policy: RING_BUFFER }
+
+incremental_state_config { clear_period_ms: 5000 }
+
+data_sources {
+  config {
+    name: "linux.ftrace"
+    target_buffer: 0
+    ftrace_config {
+      buffer_size_kb: 4096
+      drain_period_ms: 250
+      compact_sched { enabled: true }
+
+      ftrace_events: "sched/sched_switch"
+      ftrace_events: "sched/sched_wakeup"
+      ftrace_events: "sched/sched_wakeup_new"
+      ftrace_events: "sched/sched_waking"
+      ftrace_events: "sched/sched_process_exit"
+      ftrace_events: "sched/sched_process_free"
+      ftrace_events: "task/task_newtask"
+      ftrace_events: "task/task_rename"
+      ftrace_events: "power/suspend_resume"
+      ftrace_events: "power/cpu_frequency"
+      ftrace_events: "power/cpu_idle"
+      ftrace_events: "binder/binder_transaction"
+      ftrace_events: "binder/binder_transaction_received"
+      ftrace_events: "block/block_rq_issue"
+      ftrace_events: "block/block_rq_complete"
+      ftrace_events: "vmscan/mm_vmscan_direct_reclaim_begin"
+      ftrace_events: "vmscan/mm_vmscan_direct_reclaim_end"
+      ftrace_events: "vmscan/mm_vmscan_kswapd_wake"
+      ftrace_events: "vmscan/mm_vmscan_kswapd_sleep"
+      ftrace_events: "kmem/rss_stat"
+      ftrace_events: "oom/oom_score_adj_update"
+      ftrace_events: "ftrace/print"
+
+      atrace_categories: "sched"
+      atrace_categories: "freq"
+      atrace_categories: "idle"
+      atrace_categories: "gfx"
+      atrace_categories: "view"
+      atrace_categories: "wm"
+      atrace_categories: "am"
+      atrace_categories: "input"
+      atrace_categories: "binder_driver"
+      atrace_categories: "disk"
+      atrace_categories: "dalvik"
+      atrace_categories: "database"
+      atrace_categories: "res"
+      atrace_categories: "power"
+      atrace_categories: "sync"
+      atrace_categories: "app"
+      atrace_apps: "io.ente.photos"
+    }
+  }
+}
+
+data_sources {
+  config {
+    name: "linux.process_stats"
+    target_buffer: 1
+    process_stats_config {
+      scan_all_processes_on_start: true
+      record_thread_names: true
+      proc_stats_poll_ms: 1000
+    }
+  }
+}
+
+data_sources {
+  config {
+    name: "linux.sys_stats"
+    target_buffer: 1
+    sys_stats_config {
+      stat_period_ms: 1000
+      stat_counters: STAT_CPU_TIMES
+      stat_counters: STAT_FORK_COUNT
+      meminfo_period_ms: 1000
+      meminfo_counters: MEMINFO_MEM_TOTAL
+      meminfo_counters: MEMINFO_MEM_FREE
+      meminfo_counters: MEMINFO_MEM_AVAILABLE
+      meminfo_counters: MEMINFO_CACHED
+      meminfo_counters: MEMINFO_SWAP_CACHED
+      meminfo_counters: MEMINFO_SWAP_TOTAL
+      meminfo_counters: MEMINFO_SWAP_FREE
+      meminfo_counters: MEMINFO_ACTIVE_ANON
+      meminfo_counters: MEMINFO_INACTIVE_ANON
+      meminfo_counters: MEMINFO_ACTIVE_FILE
+      meminfo_counters: MEMINFO_INACTIVE_FILE
+      meminfo_counters: MEMINFO_DIRTY
+      meminfo_counters: MEMINFO_WRITEBACK
+      meminfo_counters: MEMINFO_ANON_PAGES
+      vmstat_period_ms: 1000
+      vmstat_counters: VMSTAT_NR_FREE_PAGES
+      vmstat_counters: VMSTAT_NR_ACTIVE_ANON
+      vmstat_counters: VMSTAT_NR_INACTIVE_ANON
+      vmstat_counters: VMSTAT_NR_ACTIVE_FILE
+      vmstat_counters: VMSTAT_NR_INACTIVE_FILE
+      vmstat_counters: VMSTAT_NR_ANON_PAGES
+      vmstat_counters: VMSTAT_NR_FILE_PAGES
+      vmstat_counters: VMSTAT_NR_DIRTY
+      vmstat_counters: VMSTAT_NR_WRITEBACK
+      vmstat_counters: VMSTAT_NR_SWAPCACHE
+      vmstat_counters: VMSTAT_PGPGIN
+      vmstat_counters: VMSTAT_PGPGOUT
+      vmstat_counters: VMSTAT_PSWPIN
+      vmstat_counters: VMSTAT_PSWPOUT
+      vmstat_counters: VMSTAT_PGFAULT
+      vmstat_counters: VMSTAT_PGMAJFAULT
+      vmstat_counters: VMSTAT_ALLOCSTALL
+      vmstat_counters: VMSTAT_OOM_KILL
+    }
+  }
+}
+
+data_sources {
+  config {
+    name: "android.surfaceflinger.frametimeline"
+    target_buffer: 0
+  }
+}
+
+data_sources {
+  config {
+    name: "track_event"
+    target_buffer: 0
+  }
+}
+
+data_sources {
+  config {
+    name: "android.log"
+    target_buffer: 1
+    android_log_config {
+      min_prio: PRIO_INFO
+      log_ids: LID_DEFAULT
+      log_ids: LID_SYSTEM
+      log_ids: LID_EVENTS
+      log_ids: LID_CRASH
+    }
+  }
+}
+
+data_sources {
+  config {
+    name: "android.packages_list"
+    target_buffer: 1
+    packages_list_config { package_name_filter: "io.ente.photos" }
+  }
+}
+
+data_sources {
+  config {
+    name: "android.power"
+    target_buffer: 1
+    android_power_config {
+      battery_poll_ms: 1000
+      battery_counters: BATTERY_COUNTER_CAPACITY_PERCENT
+      battery_counters: BATTERY_COUNTER_CHARGE
+      battery_counters: BATTERY_COUNTER_CURRENT
+    }
+  }
+}

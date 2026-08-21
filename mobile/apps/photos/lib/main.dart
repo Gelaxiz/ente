@@ -10,6 +10,7 @@ import "package:ente_crypto_api/ente_crypto_api.dart" show registerCryptoApi;
 import "package:ente_lock_screen/lock_screen_settings.dart";
 import "package:ente_lock_screen/ui/app_lock.dart";
 import "package:ente_lock_screen/ui/lock_screen.dart";
+import "package:ente_photos_platform/ente_photos_platform.dart";
 import "package:ente_pure_utils/ente_pure_utils.dart";
 import "package:ente_strings/ente_strings.dart";
 import "package:ente_ui/theme/theme_config.dart" as ente_ui;
@@ -91,12 +92,27 @@ late final photos_rust_log.LogSinkGuard _photosRustLogSinkGuard;
 
 enum ForegroundStartupMode { normal, picker }
 
+void _startupMarker(
+  String event, {
+  String role = "fg",
+  Map<String, Object?> details = const {},
+}) {
+  unawaited(
+    StartupDiagnosticsClient.instance.mark(event, role: role, details: details),
+  );
+}
+
 void main() async {
   debugRepaintRainbowEnabled = false;
   WidgetsFlutterBinding.ensureInitialized();
+  _startupMarker("dart.binding.ready");
+  _startupMarker("dart.store_kit.begin");
   await configureStoreKit();
+  _startupMarker("dart.store_kit.end");
   ente_ui.AppThemeConfig.initialize(ente_ui.EnteApp.photos);
+  _startupMarker("dart.device_info.begin");
   await initIsIPad();
+  _startupMarker("dart.device_info.end");
   if (isIPad) {
     // Workaround for https://github.com/flutter/flutter/issues/177992
     // iPadOS 26.1 sends fake (0,0) pointer events when taps happen near the
@@ -112,13 +128,24 @@ void main() async {
     });
   }
   FFmpegKitConfig.init().ignore();
+  _startupMarker("dart.rive.begin");
   await rive.RiveNative.init();
+  _startupMarker("dart.rive.end");
   MediaKit.ensureInitialized();
+  _startupMarker("dart.media_kit.ready");
 
+  _startupMarker("dart.theme.begin");
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
+  _startupMarker("dart.theme.end");
+  _startupMarker("dart.initial_intent.begin");
   final initialMediaExtensionAction = Platform.isAndroid
       ? await initIntentAction()
       : MediaExtentionAction(action: IntentAction.main);
+  _startupMarker(
+    "dart.initial_intent.end",
+    details: {"action": initialMediaExtensionAction.action?.name ?? "none"},
+  );
+  _startupMarker("dart.foreground_runner.begin");
   await _runInForeground(savedThemeMode, initialMediaExtensionAction);
 
   if (Platform.isAndroid) FlutterDisplayMode.setHighRefreshRate().ignore();
@@ -135,6 +162,7 @@ Future<void> _runInForeground(
 ) async {
   components.ComponentTheme.configure(app: components.ComponentApp.photos);
   return await runWithLogs(() async {
+    _startupMarker("dart.foreground_body.enter");
     _logger.info("Starting app in foreground");
     isProcessBg = false;
     final isPickerStartup =
@@ -142,6 +170,7 @@ Future<void> _runInForeground(
     if (isPickerStartup) {
       unawaited(_warmPickerFilesDb());
     }
+    _startupMarker("dart.init.begin");
     await _init(
       false,
       via: 'mainMethod',
@@ -149,7 +178,22 @@ Future<void> _runInForeground(
           ? ForegroundStartupMode.picker
           : ForegroundStartupMode.normal,
     );
+    _startupMarker("dart.init.end");
+    _startupMarker("dart.locale.begin");
     final Locale? locale = await getLocale(noFallback: true);
+    _startupMarker("dart.locale.end");
+    _startupMarker("dart.lock_state.begin");
+    final shouldShowLockScreen =
+        await LockScreenSettings.instance.shouldShowLockScreen() ||
+        localSettings.isOnGuestView();
+    _startupMarker(
+      "dart.lock_state.end",
+      details: {"enabled": shouldShowLockScreen},
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startupMarker("dart.first_post_frame");
+    });
+    _startupMarker("dart.run_app.before");
     runApp(
       AppLock(
         builder: (args) => EnteApp(
@@ -163,9 +207,7 @@ Future<void> _runInForeground(
               context.strings.authToViewYourMemories,
           onLogout: (context) => UserService.instance.logout(context),
         ),
-        enabled:
-            await LockScreenSettings.instance.shouldShowLockScreen() ||
-            localSettings.isOnGuestView(),
+        enabled: shouldShowLockScreen,
         onUnlock: () => unawaited(localSettings.setOnGuestView(false)),
         locale: locale,
         supportedLocales: appSupportedLocales,
@@ -178,6 +220,7 @@ Future<void> _runInForeground(
         savedThemeMode: _themeMode(savedThemeMode),
       ),
     );
+    _startupMarker("dart.run_app.returned");
     if (isPickerStartup) {
       return;
     }
@@ -278,14 +321,24 @@ Future<void> _runMinimally(
   TimeLogger tlog,
   MlRunControl mlRunControl,
 ) async {
+  const role = "bg";
+  _startupMarker(
+    "dart.bg_minimal.enter",
+    role: role,
+    details: {"task": taskId},
+  );
   try {
+    _startupMarker("dart.bg_bootstrap.begin", role: role);
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await _scheduleHeartBeat(prefs, true);
     await _ensureRustInitialized(via: 'workmanager:$taskId');
+    _startupMarker("dart.bg_bootstrap.end", role: role);
 
     _logger.info("[BG TASK] NetworkClient init $tlog");
+    _startupMarker("dart.bg_network.begin", role: role);
     await NetworkClient.instance.init(packageInfo, prefs);
+    _startupMarker("dart.bg_network.end", role: role);
     _logger.info("[BG TASK] NetworkClient init done $tlog");
 
     ServiceLocator.instance.init(
@@ -332,7 +385,9 @@ Future<void> _runMinimally(
     _logger.info("[BG TASK] update notification");
     updateService.showUpdateNotification().ignore();
     _logger.info("[BG TASK] sync starting");
+    _startupMarker("dart.bg_sync.begin", role: role);
     await _sync('bgTaskActiveProcess');
+    _startupMarker("dart.bg_sync.end", role: role);
     _logger.info("[BG TASK] sync completed");
 
     _logger.info("[BG TASK] locale fetch");
@@ -349,15 +404,25 @@ Future<void> _runMinimally(
       // The DiffSyncCompleteEvent fired during _sync predates PersonService
       // init in this isolate, so sync explicitly before consuming person data.
       try {
+        _startupMarker("dart.bg_person_sync.begin", role: role);
         await PersonService.instance.sync();
+        _startupMarker("dart.bg_person_sync.end", role: role);
       } catch (e, s) {
+        _startupMarker(
+          "dart.bg_person_sync.error",
+          role: role,
+          details: {"type": e.runtimeType.toString()},
+        );
         _logger.warning("[BG TASK] person sync failed", e, s);
       }
     }
+    _startupMarker("dart.bg_home_widget.begin", role: role);
     await _homeWidgetSync(true);
+    _startupMarker("dart.bg_home_widget.end", role: role);
 
     if ((isLocalGalleryMode || flagService.enableMLInBackground) &&
         hasGrantedMLConsent) {
+      _startupMarker("dart.bg_ml_gate.begin", role: role);
       await controller.init();
       final canRunML = controller.requestCompute(ml: true);
       if (!canRunML) {
@@ -366,23 +431,42 @@ Future<void> _runMinimally(
         );
       } else {
         try {
+          _startupMarker("dart.bg_ml.begin", role: role);
           await MLService.instance.init();
           PersonService.init(entityService, MLDataDB.instance, prefs);
           final disposition = await MLService.instance.runAllML(
             force: false,
             control: mlRunControl,
           );
+          _startupMarker(
+            "dart.bg_ml.end",
+            role: role,
+            details: {"disposition": disposition.name},
+          );
           _logger.info("[BG TASK] ML run disposition: ${disposition.name}");
         } finally {
           controller.releaseCompute(ml: true);
         }
       }
+      _startupMarker(
+        "dart.bg_ml_gate.end",
+        role: role,
+        details: {"allowed": canRunML},
+      );
     }
     _logger.info("[BG TASK] smart albums sync");
+    _startupMarker("dart.bg_smart_albums.begin", role: role);
     await smartAlbumsService.syncSmartAlbums();
+    _startupMarker("dart.bg_smart_albums.end", role: role);
 
     _logger.info("[BG TASK] $taskId completed");
+    _startupMarker("dart.bg_minimal.end", role: role);
   } catch (e, s) {
+    _startupMarker(
+      "dart.bg_minimal.error",
+      role: role,
+      details: {"type": e.runtimeType.toString()},
+    );
     _logger.severe("[BG TASK] $taskId error", e, s);
   }
 }
@@ -392,6 +476,12 @@ Future<void> _init(
   String via = '',
   ForegroundStartupMode startupMode = ForegroundStartupMode.normal,
 }) async {
+  final role = isBackground ? "bg" : "fg";
+  _startupMarker(
+    "dart.init.enter",
+    role: role,
+    details: {"via": via, "mode": startupMode.name},
+  );
   try {
     bool initComplete = false;
     final isPickerStartup =
@@ -409,12 +499,16 @@ Future<void> _init(
     });
     if (!isBackground) _heartBeatOnInit(0);
     _logger.info("Initializing...  inBG =$isBackground via: $via $tlog");
+    _startupMarker("dart.init.rust.begin", role: role);
     await _ensureRustInitialized(
       via: isBackground ? 'background:$via' : 'foreground:$via',
     );
+    _startupMarker("dart.init.rust.end", role: role);
+    _startupMarker("dart.init.preferences.begin", role: role);
     final SharedPreferences preferences = await SharedPreferences.getInstance();
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     await _logFGHeartBeatInfo(preferences);
+    _startupMarker("dart.init.preferences.end", role: role);
     _logger.info("_logFGHeartBeatInfo done $tlog");
     unawaited(_scheduleHeartBeat(preferences, isBackground));
     NotificationService.instance.init(preferences);
@@ -431,7 +525,9 @@ Future<void> _init(
     CryptoUtil.init();
 
     _logger.info("NetworkClient init $tlog");
+    _startupMarker("dart.init.network.begin", role: role);
     await NetworkClient.instance.init(packageInfo, preferences);
+    _startupMarker("dart.init.network.end", role: role);
     _logger.info("NetworkClient init done $tlog");
 
     ServiceLocator.instance.init(
@@ -443,11 +539,14 @@ Future<void> _init(
     );
 
     _logger.info("Configuration init $tlog");
+    _startupMarker("dart.init.configuration.begin", role: role);
     await Configuration.instance.init(preferences);
+    _startupMarker("dart.init.configuration.end", role: role);
     _logger.info("Configuration done $tlog");
 
     _logger.info("Lockscreen init $tlog");
     registerCryptoApi(const PhotosCryptoApiAdapter());
+    _startupMarker("dart.init.lock_screen.begin", role: role);
     await LockScreenSettings.instance.init(
       Configuration.instance,
       useLegacyHashFallback: true,
@@ -455,19 +554,26 @@ Future<void> _init(
       appLogoAsset: 'assets/ente-branding.svg',
       appLogoHeight: 18,
     );
+    _startupMarker("dart.init.lock_screen.end", role: role);
     AccountDeletionSettings.instance.init(
       host: Configuration.instance,
       enteDio: NetworkClient.instance.enteDio,
     );
 
+    _startupMarker("dart.init.memory_share.begin", role: role);
     await MemoryShareService.instance.init();
+    _startupMarker("dart.init.memory_share.end", role: role);
 
     _logger.info("UserService init $tlog");
+    _startupMarker("dart.init.user.begin", role: role);
     await UserService.instance.init();
+    _startupMarker("dart.init.user.end", role: role);
     _logger.info("UserService init done $tlog");
 
     _logger.info("CollectionsService init $tlog");
+    _startupMarker("dart.init.collections.begin", role: role);
     await CollectionsService.instance.init(preferences);
+    _startupMarker("dart.init.collections.end", role: role);
     _logger.info("CollectionsService init done $tlog");
     SocialNotificationCoordinator.instance.init(preferences);
 
@@ -484,6 +590,7 @@ Future<void> _init(
       _logger.info("Picker startup init done $tlog");
       initComplete = true;
       _stopHearBeat = true;
+      _startupMarker("dart.init.picker.end", role: role);
       return;
     }
 
@@ -491,18 +598,24 @@ Future<void> _init(
     LocalFileUpdateService.instance.init(preferences);
 
     _logger.info("FileUploader init $tlog");
+    _startupMarker("dart.init.file_uploader.begin", role: role);
     await FileUploader.instance.init(preferences, isBackground);
+    _startupMarker("dart.init.file_uploader.end", role: role);
     _logger.info("FileUploader init done $tlog");
 
     _logger.info("LocalSyncService init $tlog");
+    _startupMarker("dart.init.local_sync.begin", role: role);
     await LocalSyncService.instance.init(preferences);
+    _startupMarker("dart.init.local_sync.end", role: role);
     _logger.info("LocalSyncService init done $tlog");
 
     RemoteSyncService.instance.init(preferences);
     _logger.info("RemoteFileMLService done $tlog");
 
     _logger.info("SyncService init $tlog");
+    _startupMarker("dart.init.sync.begin", role: role);
     await SyncService.instance.init(preferences);
+    _startupMarker("dart.init.sync.end", role: role);
     _isSyncInitialized = true;
     _logger.info("SyncService init done $tlog");
     if (!isBackground && flagService.librarySharing) {
@@ -511,16 +624,22 @@ Future<void> _init(
 
     if (!isBackground && flagService.internalUser) {
       _logger.info("GalleryDownloadQueueService init $tlog");
+      _startupMarker("dart.init.gallery_download.begin", role: role);
       await galleryDownloadQueueService.init();
+      _startupMarker("dart.init.gallery_download.end", role: role);
       _logger.info("GalleryDownloadQueueService init done $tlog");
     }
 
     _logger.info("RitualsService init $tlog");
+    _startupMarker("dart.init.rituals.begin", role: role);
     await ritualsService.init();
+    _startupMarker("dart.init.rituals.end", role: role);
     _logger.info("RitualsService init done $tlog");
 
     if (!isBackground) {
+      _startupMarker("dart.init.home_widget.begin", role: role);
       await _scheduleFGHomeWidgetSync();
+      _startupMarker("dart.init.home_widget.end", role: role);
     }
 
     if (Platform.isIOS) {
@@ -532,8 +651,15 @@ Future<void> _init(
     unawaited(MLService.instance.init());
     PersonService.init(entityService, MLDataDB.instance, preferences);
     try {
+      _startupMarker("dart.init.person_cache.begin", role: role);
       await PersonService.instance.refreshPersonCache();
+      _startupMarker("dart.init.person_cache.end", role: role);
     } catch (e, s) {
+      _startupMarker(
+        "dart.init.person_cache.error",
+        role: role,
+        details: {"type": e.runtimeType.toString()},
+      );
       PersonService.instance.clearCache();
       _logger.severe("Person cache warm-up failed", e, s);
     }
@@ -545,7 +671,13 @@ Future<void> _init(
     initComplete = true;
     _stopHearBeat = true;
     _logger.info("Initialization done $tlog");
+    _startupMarker("dart.init.complete", role: role);
   } catch (e, s) {
+    _startupMarker(
+      "dart.init.error",
+      role: role,
+      details: {"type": e.runtimeType.toString()},
+    );
     _logger.severe("Error in init ", e, s);
     rethrow;
   }
@@ -647,10 +779,17 @@ Future<void> _sync(String caller) async {
 }
 
 Future runWithLogs(Function() function, {String prefix = ""}) async {
+  final role = prefix.isEmpty ? "fg" : "bg";
+  _startupMarker("dart.logging.begin", role: role);
+  final logDirectory = (await getApplicationSupportDirectory()).path + "/logs";
+  _startupMarker("dart.logging.path_ready", role: role);
   await SuperLogging.main(
     LogConfig(
-      body: function,
-      logDirPath: (await getApplicationSupportDirectory()).path + "/logs",
+      body: () async {
+        _startupMarker("dart.logging.ready", role: role);
+        await function();
+      },
+      logDirPath: logDirectory,
       maxLogFiles: 5,
       sentryDsn: kDebugMode ? sentryDebugDSN : sentryDSN,
       tunnel: sentryTunnel,

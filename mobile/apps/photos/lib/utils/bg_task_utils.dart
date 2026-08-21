@@ -1,5 +1,7 @@
+import "dart:async";
 import "dart:io";
 
+import "package:ente_photos_platform/ente_photos_platform.dart";
 import "package:ente_pure_utils/ente_pure_utils.dart";
 import "package:flutter/foundation.dart";
 import "package:logging/logging.dart";
@@ -14,11 +16,24 @@ import "package:workmanager/workmanager.dart" as workmanager;
 @pragma('vm:entry-point')
 void callbackDispatcher() {
   workmanager.Workmanager().executeTask((taskName, inputData) async {
+    unawaited(
+      StartupDiagnosticsClient.instance.mark(
+        "dart.bg_task.enter",
+        role: "bg",
+        details: {"task": taskName},
+      ),
+    );
     final TimeLogger tlog = TimeLogger();
     // Deferred error construction: an eagerly created Future.error with no
     // listener surfaces as an unhandled exception even on success.
     String? failure = "Task didn't run";
     final prefs = await SharedPreferences.getInstance();
+    unawaited(
+      StartupDiagnosticsClient.instance.mark(
+        "dart.bg_task.preferences_ready",
+        role: "bg",
+      ),
+    );
 
     await runWithLogs(() async {
       try {

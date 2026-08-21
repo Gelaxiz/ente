@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import io.ente.photos.platform.startup.StartupDiagnosticsJournal
 import dev.fluttercommunity.workmanager.TaskDebugInfo
 import dev.fluttercommunity.workmanager.TaskResult
 import dev.fluttercommunity.workmanager.WorkmanagerDebug
@@ -16,6 +17,7 @@ import kotlin.random.Random
 class EnteApplication : Application() {
   override fun onCreate() {
     super.onCreate()
+    StartupDiagnosticsJournal.initialize(this)
     WorkmanagerDebug.setCurrent(InternalUserWorkmanagerDebugHandler())
   }
 
@@ -36,6 +38,18 @@ private class InternalUserWorkmanagerDebugHandler : WorkmanagerDebug() {
     status: TaskStatus,
     result: TaskResult?,
   ) {
+    StartupDiagnosticsJournal.mark(
+      context,
+      "workmanager.status",
+      "native_wm",
+      attemptId = null,
+      details = mapOf(
+        "task" to taskInfo.taskName,
+        "unique_name" to (taskInfo.uniqueName ?: ""),
+        "status" to status.name,
+        "duration_ms" to (result?.duration?.toString() ?: ""),
+      ),
+    )
     if (!shouldEnableWorkmanagerDebugNotifications(context)) {
       return
     }
@@ -49,6 +63,16 @@ private class InternalUserWorkmanagerDebugHandler : WorkmanagerDebug() {
     taskInfo: TaskDebugInfo?,
     exception: Throwable,
   ) {
+    StartupDiagnosticsJournal.mark(
+      context,
+      "workmanager.exception",
+      "native_wm",
+      attemptId = null,
+      details = mapOf(
+        "task" to (taskInfo?.taskName ?: "unknown"),
+        "exception_type" to exception.javaClass.name,
+      ),
+    )
     if (!shouldEnableWorkmanagerDebugNotifications(context)) {
       return
     }
