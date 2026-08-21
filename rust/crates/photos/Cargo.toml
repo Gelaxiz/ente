@@ -1,9 +1,0 @@
-[package]
-name = "ente-photos"
-edition = "2024"
-
-[dependencies]
-quick-xml = "0.41"
-
-[dev-dependencies]
-tempfile = "3.12"

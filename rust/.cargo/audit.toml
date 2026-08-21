@@ -1,3 +1,0 @@
-[advisories]
-severity_threshold = "critical"
-informational_warnings = ["unsound", "notice"]

@@ -3,12 +3,10 @@ name: Ente Auth Community Windows
 on:
   pull_request:
     paths:
-      - "desktop/auth-windows/**"
-      - ".github/workflows/auth-windows.yml"
+      - "**"
   push:
     paths:
-      - "desktop/auth-windows/**"
-      - ".github/workflows/auth-windows.yml"
+      - "**"
 
 permissions:
   contents: read
@@ -16,9 +14,6 @@ permissions:
 jobs:
   test-and-build:
     runs-on: windows-latest
-    defaults:
-      run:
-        working-directory: desktop/auth-windows
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-dotnet@v5
@@ -35,9 +30,9 @@ jobs:
       - name: Build Installer (Inno Setup)
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
-          path: desktop/auth-windows/setup.iss
+          path: setup.iss
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: EnteAuth-Setup
-          path: desktop/auth-windows/Output/EnteAuth-Setup.exe
+          path: Output/EnteAuth-Setup.exe
