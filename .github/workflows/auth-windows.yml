@@ -30,5 +30,14 @@ jobs:
         run: dotnet test tests/Ente.Auth.Core.Tests/Ente.Auth.Core.Tests.csproj --no-restore
       - name: Test infrastructure
         run: dotnet test tests/Ente.Auth.Infrastructure.Tests/Ente.Auth.Infrastructure.Tests.csproj --no-restore
-      - name: Build Windows app
-        run: dotnet build src/Ente.Auth.App/Ente.Auth.App.csproj --no-restore -p:Platform=x64
+      - name: Publish Windows app
+        run: dotnet publish src/Ente.Auth.App/Ente.Auth.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:WindowsPackageType=None -p:WindowsAppSDKSelfContained=true -o publish_output
+      - name: Build Installer (Inno Setup)
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: desktop/auth-windows/setup.iss
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EnteAuth-Setup
+          path: desktop/auth-windows/Output/EnteAuth-Setup.exe

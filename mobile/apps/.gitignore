@@ -1,6 +1,0 @@
-**/lib/generated_plugin_registrant.dart
-**/rust_builder/pubspec.lock
-**/rust_builder/windows/flutter/
-
-# Generated FRB Dart bindings
-*/lib/src/rust/*
