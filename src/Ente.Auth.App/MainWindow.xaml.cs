@@ -93,10 +93,34 @@ public sealed partial class MainWindow : Window
         await App.UpdateSettingsAsync(App.CurrentSettings with { EnableGlobalShortcut = EnableGlobalShortcutToggle.IsOn });
     }
 
-    private async void GlobalShortcutBox_TextChanged(object sender, TextChangedEventArgs e)
+    private async void GlobalShortcutBox_KeyDown(object sender, KeyRoutedEventArgs e)
     {
+        e.Handled = true;
+        var key = e.Key;
+        if (key == Windows.System.VirtualKey.Control || key == Windows.System.VirtualKey.LeftControl || key == Windows.System.VirtualKey.RightControl ||
+            key == Windows.System.VirtualKey.Shift || key == Windows.System.VirtualKey.LeftShift || key == Windows.System.VirtualKey.RightShift ||
+            key == Windows.System.VirtualKey.Menu || key == Windows.System.VirtualKey.LeftMenu || key == Windows.System.VirtualKey.RightMenu ||
+            key == Windows.System.VirtualKey.Windows || key == Windows.System.VirtualKey.LeftWindows || key == Windows.System.VirtualKey.RightWindows)
+            return;
+
+        var ctrl = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Control).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+        var shift = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Shift).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+        var alt = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Menu).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+        var win = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.LeftWindows).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down) ||
+                  Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.RightWindows).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+
+        var sb = new System.Text.StringBuilder();
+        if (ctrl) sb.Append("Ctrl+");
+        if (shift) sb.Append("Shift+");
+        if (alt) sb.Append("Alt+");
+        if (win) sb.Append("Win+");
+        
+        sb.Append(key.ToString());
+        var shortcut = sb.ToString();
+        GlobalShortcutBox.Text = shortcut;
+
         if (_loadingSettings) return;
-        await App.UpdateSettingsAsync(App.CurrentSettings with { GlobalShortcut = GlobalShortcutBox.Text });
+        await App.UpdateSettingsAsync(App.CurrentSettings with { GlobalShortcut = shortcut });
     }
 
     private async void GridViewLayoutToggle_Toggled(object sender, RoutedEventArgs e)
