@@ -76,8 +76,12 @@ public sealed partial class App : Application
         _sessionStore = new DpapiEnteSessionStore(Path.Combine(dataPath, "ente-session.bin"), protector);
         _authenticatorKeyStore = new DpapiAuthenticatorKeyStore(Path.Combine(dataPath, "authenticator-key.bin"), protector);
         var accountHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.com/") };
+        accountHttp.DefaultRequestHeaders.Add("X-Client-Package", "io.ente.auth.windows");
+        accountHttp.DefaultRequestHeaders.Add("X-Client-Version", "1.0.0");
         _authenticationService = new EnteAuthenticationService(new EnteAccountClient(accountHttp), crypto);
         var authenticatorHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.com/") };
+        authenticatorHttp.DefaultRequestHeaders.Add("X-Client-Package", "io.ente.auth.windows");
+        authenticatorHttp.DefaultRequestHeaders.Add("X-Client-Version", "1.0.0");
         var authenticatorClient = new EnteAuthenticatorClient(authenticatorHttp, () => _session?.AuthToken);
         _authenticatorKeyManager = new EnteAuthenticatorKeyManager(authenticatorClient, crypto, _authenticatorKeyStore);
         _syncStateStore = new SqliteAuthenticatorSyncStateStore(connectionString, protector);
