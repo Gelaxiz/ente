@@ -47,8 +47,8 @@
                         </StackPanel>
                         <CommandBar Grid.Column="1" Background="Transparent" DefaultLabelPosition="Right" VerticalAlignment="Center">
                             <AppBarButton Label="Add code" Icon="Add" Click="AddCode_Click" />
-                            <AppBarButton Label="Import" Icon="Download" Click="Import_Click" />
-                            <AppBarButton Label="Export" Icon="Upload" Click="Export_Click" />
+                            <AppBarButton x:Name="ImportButton" Label="Import" Icon="Download" Click="Import_Click" />
+                            <AppBarButton x:Name="ExportButton" Label="Export" Icon="Upload" Click="Export_Click" />
                         </CommandBar>
                     </Grid>
 
