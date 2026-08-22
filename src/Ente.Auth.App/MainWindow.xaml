@@ -45,11 +45,33 @@
                                            AutomationProperties.LiveSetting="Assertive" />
                             </StackPanel>
                         </StackPanel>
-                        <CommandBar Grid.Column="1" Background="Transparent" DefaultLabelPosition="Right" VerticalAlignment="Center">
-                            <AppBarButton Label="Add code" Icon="Add" Click="AddCode_Click" />
-                            <AppBarButton x:Name="ImportButton" Label="Import" Icon="Download" Click="Import_Click" />
-                            <AppBarButton x:Name="ExportButton" Label="Export" Icon="Upload" Click="Export_Click" />
-                        </CommandBar>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <Button Style="{StaticResource AccentButtonStyle}" Click="AddCode_Click">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE710;" FontSize="14" />
+                                    <TextBlock Text="Add code" Margin="0,0,0,2" />
+                                </StackPanel>
+                            </Button>
+                            <DropDownButton>
+                                <DropDownButton.Content>
+                                    <FontIcon Glyph="&#xE712;" FontSize="16" />
+                                </DropDownButton.Content>
+                                <DropDownButton.Flyout>
+                                    <MenuFlyout>
+                                        <MenuFlyoutItem x:Name="ImportButton" Text="Import codes" Click="Import_Click">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE896;" />
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                        <MenuFlyoutItem x:Name="ExportButton" Text="Export codes" Click="Export_Click">
+                                            <MenuFlyoutItem.Icon>
+                                                <FontIcon Glyph="&#xE898;" />
+                                            </MenuFlyoutItem.Icon>
+                                        </MenuFlyoutItem>
+                                    </MenuFlyout>
+                                </DropDownButton.Flyout>
+                            </DropDownButton>
+                        </StackPanel>
                     </Grid>
 
                     <AutoSuggestBox Grid.Row="1" Margin="0,22,0,12" Height="44"
