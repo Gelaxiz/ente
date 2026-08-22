@@ -6,7 +6,15 @@
         <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
         <Grid>
             <TextBlock Text="Ente Auth" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
-            <Button HorizontalAlignment="Right" Padding="10,5" Content="Open app" Click="OpenApp_Click" />
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="6">
+                <Button Padding="8" ToolTipService.ToolTip="Lock app" Click="LockApp_Click">
+                    <FontIcon Glyph="&#xE72E;" FontSize="14" />
+                </Button>
+                <Button Padding="10,5" Content="Open app" Click="OpenApp_Click" />
+                <Button Padding="8" ToolTipService.ToolTip="Close" Click="ClosePanel_Click">
+                    <FontIcon Glyph="&#xE8BB;" FontSize="14" />
+                </Button>
+            </StackPanel>
         </Grid>
         <AutoSuggestBox x:Name="SearchBox" Grid.Row="1" Height="42" PlaceholderText="Search codes" QueryIcon="Find"
                         Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

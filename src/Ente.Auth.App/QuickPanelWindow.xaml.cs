@@ -57,6 +57,17 @@ public sealed partial class QuickPanelWindow : Window
         App.ShowMainWindow();
     }
 
+    private void LockApp_Click(object sender, RoutedEventArgs e)
+    {
+        this.Hide();
+        App.Lock();
+    }
+
+    private void ClosePanel_Click(object sender, RoutedEventArgs e)
+    {
+        this.Hide();
+    }
+
     private void Root_KeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (e.Key != Windows.System.VirtualKey.Escape) return;

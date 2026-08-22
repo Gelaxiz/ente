@@ -182,7 +182,7 @@ public sealed partial class App : Application
         _quickPanel.Activate();
     }
 
-    private static void Lock()
+    public static void Lock()
     {
         _isLocked = true;
         _viewModel?.Lock();
