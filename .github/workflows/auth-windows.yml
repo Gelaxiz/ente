@@ -40,4 +40,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: EnteAuth-Portable
-          path: publish_output/Ente.Auth.App.exe
+          path: publish_output/

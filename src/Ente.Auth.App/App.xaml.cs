@@ -123,16 +123,12 @@ public sealed partial class App : Application
         _trayIcon.ForceCreate();
     }
 
-    public static bool AppLockEnabled
-    {
-        get => ApplicationData.Current.LocalSettings.Values["AppLockEnabled"] is bool value ? value : true;
-        set => ApplicationData.Current.LocalSettings.Values["AppLockEnabled"] = value;
-    }
+
 
     public static async Task ShowMainWindowAsync()
     {
         if (_viewModel is null) return;
-        if (AppLockEnabled && _isLocked && !await VerifyPresenceAsync("Unlock Ente Auth Community"))
+        if (CurrentSettings.AppLockEnabled && _isLocked && !await VerifyPresenceAsync("Unlock Ente Auth Community"))
         {
             ShowPresenceFailure();
             return;
@@ -173,7 +169,7 @@ public sealed partial class App : Application
     {
         if (_quickViewModel is null) return;
         _quickPanel?.Hide();
-        if (AppLockEnabled && _isLocked && !await VerifyPresenceAsync("Open your authenticator codes"))
+        if (CurrentSettings.AppLockEnabled && _isLocked && !await VerifyPresenceAsync("Open your authenticator codes"))
         {
             ShowPresenceFailure();
             return;
