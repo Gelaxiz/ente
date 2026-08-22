@@ -74,7 +74,7 @@
                             </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid Padding="12,10" ColumnSpacing="16">
+                                    <Grid Padding="12,10" ColumnSpacing="16" DoubleTapped="Code_DoubleTapped" Tag="{Binding}" Background="Transparent">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
@@ -87,7 +87,7 @@
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Width="180" VerticalAlignment="Center" Spacing="6">
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
-                                                <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="23" FontWeight="SemiBold" CharacterSpacing="75" />
+                                                <TextBlock Text="{Binding DisplayCode}" FontFamily="Cascadia Mono" FontSize="23" FontWeight="SemiBold" CharacterSpacing="75" />
                                                 <TextBlock Text="{Binding CountdownText}" FontSize="12" VerticalAlignment="Bottom" Margin="0,0,0,3" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
                                             </StackPanel>
                                             <ProgressBar Value="{Binding Progress}" Maximum="100" Height="2" Foreground="{StaticResource AccentBrush}" />
@@ -116,7 +116,7 @@
                             </GridView.ItemContainerStyle>
                             <GridView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid Padding="12,10" Margin="4" MinWidth="220" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4">
+                                    <Grid Padding="12,10" Margin="4" MinWidth="220" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4" DoubleTapped="Code_DoubleTapped" Tag="{Binding}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
@@ -128,7 +128,7 @@
                                         </StackPanel>
                                         <StackPanel Grid.Row="1" Margin="0,12,0,0" Spacing="4">
                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
-                                                <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="20" FontWeight="SemiBold" />
+                                                <TextBlock Text="{Binding DisplayCode}" FontFamily="Cascadia Mono" FontSize="20" FontWeight="SemiBold" />
                                                 <TextBlock Text="{Binding CountdownText}" FontSize="12" VerticalAlignment="Bottom" Margin="0,0,0,2" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
                                             </StackPanel>
                                             <ProgressBar Value="{Binding Progress}" Maximum="100" Height="2" Foreground="{StaticResource AccentBrush}" />
@@ -191,8 +191,29 @@
                             <TextBox x:Name="GlobalShortcutBox" Header="Global shortcut keys (Press your combo here)" PlaceholderText="Press keys..." Width="240" HorizontalAlignment="Left" Visibility="{Binding ElementName=EnableGlobalShortcutToggle, Path=IsOn, Converter={StaticResource BooleanToVisibilityConverter}}" KeyDown="GlobalShortcutBox_KeyDown" IsReadOnly="True" />
                         </StackPanel>
                         <ToggleSwitch x:Name="GridViewLayoutToggle" Header="Use 2-column grid layout (compact)" Toggled="GridViewLayoutToggle_Toggled" />
+                        <ToggleSwitch x:Name="HideCodesToggle" Header="Hide codes by default (Double click code to reveal)" Toggled="HideCodesToggle_Toggled" />
                         <StackPanel Spacing="8">
-                            <TextBlock Text="About" FontWeight="SemiBold" />
+                            <ComboBox x:Name="SortModePicker" Header="Sort codes" Width="320" HorizontalAlignment="Left" SelectionChanged="SortModePicker_SelectionChanged">
+                                <ComboBoxItem Content="Most Recent" />
+                                <ComboBoxItem Content="A - Z" />
+                                <ComboBoxItem Content="Z - A" />
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Account &amp; Features" FontWeight="SemiBold" />
+                            <Button Content="Change email" Width="320" Click="OpenWeb_Click" Tag="https://auth.ente.io/account" />
+                            <Button Content="Change password" Width="320" Click="OpenWeb_Click" Tag="https://auth.ente.io/account" />
+                            <Button Content="Recovery key" Width="320" Click="OpenWeb_Click" Tag="https://auth.ente.io/account" />
+                            <Button Content="Remove account" Width="320" Click="OpenWeb_Click" Tag="https://auth.ente.io/account" />
+                            <Button Content="View Active sessions" Width="320" Click="OpenWeb_Click" Tag="https://auth.ente.io/account" />
+                            <Button Content="Import codes" Width="320" Click="OpenWeb_Click" Tag="https://auth.ente.io/account" />
+                        </StackPanel>
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="About &amp; Feedback" FontWeight="SemiBold" />
+                            <Button Content="Report a bug" Width="320" Click="OpenWeb_Click" Tag="https://github.com/Gelaxiz/ente/issues/new?labels=bug" />
+                            <Button Content="Suggest a feature" Width="320" Click="OpenWeb_Click" Tag="https://github.com/Gelaxiz/ente/issues/new?labels=enhancement" />
+                            <Button Content="Ente Privacy Policy" Width="320" Click="OpenWeb_Click" Tag="https://ente.io/privacy" />
+                            <Button Content="Terms of Service" Width="320" Click="OpenWeb_Click" Tag="https://ente.io/terms" />
                             <TextBlock Text="Ente Auth Community is an unofficial community fork and is not endorsed by Ente." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
                         </StackPanel>
                     </StackPanel>

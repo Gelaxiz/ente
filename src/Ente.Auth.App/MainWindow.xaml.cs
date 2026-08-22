@@ -66,6 +66,8 @@ public sealed partial class MainWindow : Window
         GridViewLayoutToggle.IsOn = App.CurrentSettings.GridViewLayout;
         EnableGlobalShortcutToggle.IsOn = App.CurrentSettings.EnableGlobalShortcut;
         GlobalShortcutBox.Text = App.CurrentSettings.GlobalShortcut;
+        HideCodesToggle.IsOn = App.CurrentSettings.HideCodes;
+        SortModePicker.SelectedIndex = App.CurrentSettings.SortMode;
         _loadingSettings = false;
     }
 
@@ -128,6 +130,36 @@ public sealed partial class MainWindow : Window
         if (_loadingSettings) return;
         await App.UpdateSettingsAsync(App.CurrentSettings with { GridViewLayout = GridViewLayoutToggle.IsOn });
         ViewModel.NotifySettingsChanged();
+    }
+
+    private async void HideCodesToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_loadingSettings) return;
+        await App.UpdateSettingsAsync(App.CurrentSettings with { HideCodes = HideCodesToggle.IsOn });
+        ViewModel.NotifySettingsChanged();
+    }
+
+    private async void SortModePicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_loadingSettings) return;
+        await App.UpdateSettingsAsync(App.CurrentSettings with { SortMode = SortModePicker.SelectedIndex });
+        ViewModel.NotifySettingsChanged();
+    }
+
+    private void OpenWeb_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is string url)
+        {
+            _ = Windows.System.Launcher.LaunchUriAsync(new Uri(url));
+        }
+    }
+
+    private void Code_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.Tag is ViewModels.OtpCodeViewModel code)
+        {
+            code.IsHidden = !code.IsHidden;
+        }
     }
 
     private void Navigation_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)

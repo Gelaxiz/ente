@@ -10,4 +10,6 @@ public sealed record AppSettings(
     bool GridViewLayout = false,
     bool AutoSyncOnNetwork = false,
     bool EnableGlobalShortcut = false,
-    string GlobalShortcut = "Ctrl+Shift+E");
+    string GlobalShortcut = "Ctrl+Shift+E",
+    bool HideCodes = false,
+    int SortMode = 0);

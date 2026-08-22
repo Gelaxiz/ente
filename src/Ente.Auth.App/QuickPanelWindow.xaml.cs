@@ -85,6 +85,14 @@ public sealed partial class QuickPanelWindow : Window
         }
     }
 
+    private void Code_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.Tag is OtpCodeViewModel code)
+        {
+            code.IsHidden = !code.IsHidden;
+        }
+    }
+
     private void OpenApp_Click(object sender, RoutedEventArgs e)
     {
         this.Hide();

@@ -45,7 +45,11 @@ public sealed class MainViewModel : ObservableObject
         ApplyFilter();
     }
 
-    public void NotifySettingsChanged() => OnPropertyChanged(nameof(IsGridView));
+    public void NotifySettingsChanged()
+    {
+        OnPropertyChanged(nameof(IsGridView));
+        ApplyFilter();
+    }
 
     private void ApplyFilter()
     {
@@ -53,10 +57,24 @@ public sealed class MainViewModel : ObservableObject
         var filtered = _accounts.Where(account => query.Length == 0 ||
             account.Issuer.Contains(query, StringComparison.CurrentCultureIgnoreCase) ||
             account.AccountName.Contains(query, StringComparison.CurrentCultureIgnoreCase));
+            
+        if (App.CurrentSettings.SortMode == 0) // MostRecent
+        {
+            filtered = filtered.OrderByDescending(a => a.LastUsedAt);
+        }
+        else if (App.CurrentSettings.SortMode == 1) // A-Z
+        {
+            filtered = filtered.OrderBy(a => a.DisplayName).ThenBy(a => a.AccountName);
+        }
+        else if (App.CurrentSettings.SortMode == 2) // Z-A
+        {
+            filtered = filtered.OrderByDescending(a => a.DisplayName).ThenByDescending(a => a.AccountName);
+        }
+
         Codes.Clear();
         foreach (var account in filtered)
         {
-            var code = new OtpCodeViewModel(account, _generator);
+            var code = new OtpCodeViewModel(account, _generator) { IsHidden = App.CurrentSettings.HideCodes };
             code.Refresh(DateTimeOffset.Now);
             Codes.Add(code);
         }

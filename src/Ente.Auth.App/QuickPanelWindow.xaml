@@ -26,7 +26,7 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Button HorizontalContentAlignment="Stretch" MinHeight="48" Padding="10" Margin="0,1" Background="Transparent" BorderThickness="0"
-                                Click="CopyCode_Click" Tag="{Binding}" ToolTipService.ToolTip="Copy code"
+                                Click="CopyCode_Click" DoubleTapped="Code_DoubleTapped" Tag="{Binding}" ToolTipService.ToolTip="Copy code"
                                 AutomationProperties.Name="{Binding AutomationName}">
                             <Grid ColumnSpacing="12">
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
@@ -39,7 +39,7 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Width="116" Spacing="5">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
-                                        <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="19" FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding DisplayCode}" FontFamily="Cascadia Mono" FontSize="19" FontWeight="SemiBold" />
                                         <TextBlock Text="{Binding CountdownText}" FontSize="11" VerticalAlignment="Bottom" />
                                     </StackPanel>
                                     <ProgressBar Value="{Binding Progress}" Height="2" Foreground="{StaticResource AccentBrush}" />
@@ -56,10 +56,10 @@
                 <GridView.ItemTemplate>
                     <DataTemplate>
                         <Button HorizontalContentAlignment="Stretch" MinHeight="50" Width="174" Padding="6" Margin="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4"
-                                Click="CopyCode_Click" Tag="{Binding}" ToolTipService.ToolTip="Copy code">
+                                Click="CopyCode_Click" DoubleTapped="Code_DoubleTapped" Tag="{Binding}" ToolTipService.ToolTip="Copy code">
                             <StackPanel Spacing="2">
                                 <TextBlock Text="{Binding Issuer}" FontWeight="SemiBold" FontSize="11" TextTrimming="CharacterEllipsis" />
-                                <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                                <TextBlock Text="{Binding DisplayCode}" FontFamily="Cascadia Mono" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" />
                                 <ProgressBar Value="{Binding Progress}" Height="2" Foreground="{StaticResource AccentBrush}" />
                             </StackPanel>
                         </Button>
