@@ -100,7 +100,7 @@ public sealed partial class MainWindow : Window
         if (key == Windows.System.VirtualKey.Control || key == Windows.System.VirtualKey.LeftControl || key == Windows.System.VirtualKey.RightControl ||
             key == Windows.System.VirtualKey.Shift || key == Windows.System.VirtualKey.LeftShift || key == Windows.System.VirtualKey.RightShift ||
             key == Windows.System.VirtualKey.Menu || key == Windows.System.VirtualKey.LeftMenu || key == Windows.System.VirtualKey.RightMenu ||
-            key == Windows.System.VirtualKey.Windows || key == Windows.System.VirtualKey.LeftWindows || key == Windows.System.VirtualKey.RightWindows)
+            key == Windows.System.VirtualKey.LeftWindows || key == Windows.System.VirtualKey.RightWindows)
             return;
 
         var ctrl = Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(Windows.System.VirtualKey.Control).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);

@@ -31,8 +31,8 @@ public static class GlobalHotkey
     private const int HOTKEY_ID = 9001;
 
     private static IntPtr _hWnd;
-    private static SubclassProc _subclassProc;
-    private static Action _onTriggered;
+    private static SubclassProc? _subclassProc;
+    private static Action? _onTriggered;
 
     public static void Register(Window window, string shortcut, Action onTriggered)
     {
