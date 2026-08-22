@@ -51,11 +51,11 @@
             </ListView>
             <GridView ItemsSource="{Binding Codes}" SelectionMode="None" Visibility="{Binding IsGridView, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <GridView.ItemContainerStyle>
-                    <Style TargetType="GridViewItem"><Setter Property="HorizontalContentAlignment" Value="Stretch" /><Setter Property="Padding" Value="0" /></Style>
+                    <Style TargetType="GridViewItem"><Setter Property="HorizontalContentAlignment" Value="Stretch" /><Setter Property="Padding" Value="0" /><Setter Property="Margin" Value="0" /><Setter Property="MinWidth" Value="0" /></Style>
                 </GridView.ItemContainerStyle>
                 <GridView.ItemTemplate>
                     <DataTemplate>
-                        <Button HorizontalContentAlignment="Stretch" MinHeight="50" Width="188" Padding="6" Margin="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4"
+                        <Button HorizontalContentAlignment="Stretch" MinHeight="50" Width="174" Padding="6" Margin="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4"
                                 Click="CopyCode_Click" Tag="{Binding}" ToolTipService.ToolTip="Copy code">
                             <StackPanel Spacing="2">
                                 <TextBlock Text="{Binding Issuer}" FontWeight="SemiBold" FontSize="11" TextTrimming="CharacterEllipsis" />
