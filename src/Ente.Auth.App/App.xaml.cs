@@ -268,6 +268,11 @@ public sealed partial class App : Application
             finally { CryptographicOperations.ZeroMemory(authenticatorKey); }
         }
         catch (OperationCanceledException) when (_syncCancellation.IsCancellationRequested) { throw; }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        {
+            LastSyncError = "Session expired or rejected by Ente. Automatically signing out.";
+            _ = SignOutAsync();
+        }
         catch (Exception ex)
         {
             System.IO.File.WriteAllText("sync_error_log.txt", ex.ToString());
