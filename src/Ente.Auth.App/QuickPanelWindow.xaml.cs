@@ -20,7 +20,6 @@ public sealed partial class QuickPanelWindow : Window
             presenter.IsResizable = false;
             presenter.IsMaximizable = false;
             presenter.IsMinimizable = false;
-            presenter.IsAlwaysOnTop = true;
         }
         Activated += (_, args) =>
         {

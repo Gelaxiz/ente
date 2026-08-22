@@ -1,8 +1,8 @@
 [Setup]
-AppName=Ente Auth
-AppVersion=1.0.0
+AppName=Ente Auth Community
+AppVersion=1.0.1
 DefaultDirName={autopf}\EnteAuth
-DefaultGroupName=Ente Auth
+DefaultGroupName=Ente Auth Community
 OutputDir=Output
 OutputBaseFilename=EnteAuth-Setup
 Compression=lzma2
@@ -16,11 +16,11 @@ PrivilegesRequired=lowest
 Source: "publish_output\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\Ente Auth"; Filename: "{app}\Ente.Auth.App.exe"
-Name: "{autodesktop}\Ente Auth"; Filename: "{app}\Ente.Auth.App.exe"; Tasks: desktopicon
+Name: "{group}\Ente Auth Community"; Filename: "{app}\Ente.Auth.App.exe"
+Name: "{autodesktop}\Ente Auth Community"; Filename: "{app}\Ente.Auth.App.exe"; Tasks: desktopicon
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Run]
-Filename: "{app}\Ente.Auth.App.exe"; Description: "{cm:LaunchProgram,Ente Auth}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\Ente.Auth.App.exe"; Description: "{cm:LaunchProgram,Ente Auth Community}"; Flags: nowait postinstall skipifsilent
