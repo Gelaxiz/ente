@@ -41,3 +41,10 @@ jobs:
         with:
           name: EnteAuth-Portable
           path: publish_output/
+      - name: Upload to Release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          Compress-Archive -Path publish_output\* -DestinationPath EnteAuth-Portable.zip
+          gh release upload v1.0.0 Output/EnteAuth-Setup.exe EnteAuth-Portable.zip --clobber
