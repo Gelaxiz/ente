@@ -122,10 +122,16 @@ public sealed partial class App : Application
         _trayIcon.ForceCreate();
     }
 
+    public static bool AppLockEnabled
+    {
+        get => ApplicationData.Current.LocalSettings.Values["AppLockEnabled"] is bool value ? value : true;
+        set => ApplicationData.Current.LocalSettings.Values["AppLockEnabled"] = value;
+    }
+
     public static async Task ShowMainWindowAsync()
     {
         if (_viewModel is null) return;
-        if (_isLocked && !await VerifyPresenceAsync("Unlock Ente Auth Community"))
+        if (AppLockEnabled && _isLocked && !await VerifyPresenceAsync("Unlock Ente Auth Community"))
         {
             ShowPresenceFailure();
             return;
@@ -166,16 +172,15 @@ public sealed partial class App : Application
     {
         if (_quickViewModel is null) return;
         _quickPanel?.Hide();
-        if (_isLocked && !await VerifyPresenceAsync("Open your authenticator codes"))
+        if (AppLockEnabled && _isLocked && !await VerifyPresenceAsync("Open your authenticator codes"))
         {
             ShowPresenceFailure();
             return;
         }
         _isLocked = false;
+        await _quickViewModel.ReloadAsync();
         _quickPanel ??= new QuickPanelWindow(_quickViewModel);
-        await _quickPanel.PrepareAsync();
-        _quickPanel.Show();
-        _quickPanel.Activate();
+        _quickPanel.ShowRelativeToCursor();
     }
 
     private static void Lock()
@@ -264,8 +269,9 @@ public sealed partial class App : Application
             finally { CryptographicOperations.ZeroMemory(authenticatorKey); }
         }
         catch (OperationCanceledException) when (_syncCancellation.IsCancellationRequested) { throw; }
-        catch
+        catch (Exception ex)
         {
+            System.IO.File.WriteAllText("sync_error_log.txt", ex.ToString());
             LastSyncError = "Synchronization failed. Retry to finish applying remote and local changes.";
             throw;
         }

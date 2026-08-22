@@ -55,7 +55,14 @@ public sealed partial class MainWindow : Window
     {
         LaunchModePicker.SelectedIndex = (int)App.CurrentSettings.LaunchMode;
         LaunchAtSignInToggle.IsOn = App.CurrentSettings.LaunchAtSignIn;
+        AppLockToggle.IsOn = App.AppLockEnabled;
         _loadingSettings = false;
+    }
+
+    private void AppLockToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_loadingSettings) return;
+        App.AppLockEnabled = AppLockToggle.IsOn;
     }
 
     private void Navigation_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
