@@ -58,12 +58,12 @@
                         </StackPanel>
                     </Grid>
 
-                    <AutoSuggestBox Grid.Row="1" Margin="0,22,0,12" Height="44"
+                    <AutoSuggestBox x:Name="SearchBox" Grid.Row="1" Margin="0,22,0,12" Height="44"
                                     PlaceholderText="Search accounts" QueryIcon="Find"
                                     Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                     <Grid Grid.Row="2">
-                        <ListView ItemsSource="{Binding Codes}" SelectionMode="None" IsItemClickEnabled="False">
+                        <ListView ItemsSource="{Binding Codes}" SelectionMode="None" IsItemClickEnabled="False" Visibility="{Binding IsGridView, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -103,6 +103,42 @@
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
+                        <GridView ItemsSource="{Binding Codes}" SelectionMode="None" IsItemClickEnabled="False" Visibility="{Binding IsGridView, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <GridView.ItemContainerStyle>
+                                <Style TargetType="GridViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="Margin" Value="0" />
+                                </Style>
+                            </GridView.ItemContainerStyle>
+                            <GridView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Padding="12,10" Margin="4" MinWidth="220" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Text="{Binding Issuer}" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding AccountName}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1" Margin="0,12,0,0" Spacing="4">
+                                            <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                                            <ProgressBar Value="{Binding Progress}" Maximum="100" Height="2" Foreground="{StaticResource AccentBrush}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,12,0,0">
+                                            <Button Width="36" Height="36" Padding="0" ToolTipService.ToolTip="Copy code" AutomationProperties.Name="{Binding AutomationName}" Click="CopyCode_Click" Tag="{Binding}">
+                                                <FontIcon Glyph="&#xE8C8;" FontSize="14" />
+                                            </Button>
+                                            <Button Width="36" Height="36" Padding="0" ToolTipService.ToolTip="More actions" AutomationProperties.Name="More account actions" Click="MoreActions_Click" Tag="{Binding}">
+                                                <FontIcon Glyph="&#xE712;" FontSize="14" />
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </GridView.ItemTemplate>
+                        </GridView>
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="9"
                                     Visibility="{Binding IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <FontIcon Glyph="&#xE8D7;" FontSize="28" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
@@ -142,6 +178,9 @@
                             </StackPanel>
                         </StackPanel>
                         <ToggleSwitch x:Name="AppLockToggle" Header="Require app lock" Toggled="AppLockToggle_Toggled" />
+                        <ToggleSwitch x:Name="FocusSearchOnOpenToggle" Header="Focus search bar on open" Toggled="FocusSearchOnOpenToggle_Toggled" />
+                        <ToggleSwitch x:Name="AutoSyncOnNetworkToggle" Header="Auto-sync when internet is available" Toggled="AutoSyncOnNetworkToggle_Toggled" />
+                        <ToggleSwitch x:Name="GridViewLayoutToggle" Header="Use 2-column grid layout (compact)" Toggled="GridViewLayoutToggle_Toggled" />
                         <StackPanel Spacing="8">
                             <TextBlock Text="About" FontWeight="SemiBold" />
                             <TextBlock Text="Ente Auth Community is an unofficial community fork and is not endorsed by Ente." TextWrapping="Wrap" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />

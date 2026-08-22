@@ -39,6 +39,11 @@ public sealed partial class MainWindow : Window
             args.Cancel = true;
             this.Hide();
         };
+        Activated += (_, args) =>
+        {
+            if (args.WindowActivationState != WindowActivationState.Deactivated && App.CurrentSettings.FocusSearchOnOpen)
+                SearchBox.Focus(FocusState.Programmatic);
+        };
         _timer.Tick += (_, _) =>
         {
             viewModel.Tick();
@@ -56,6 +61,9 @@ public sealed partial class MainWindow : Window
         LaunchModePicker.SelectedIndex = (int)App.CurrentSettings.LaunchMode;
         LaunchAtSignInToggle.IsOn = App.CurrentSettings.LaunchAtSignIn;
         AppLockToggle.IsOn = App.CurrentSettings.AppLockEnabled;
+        FocusSearchOnOpenToggle.IsOn = App.CurrentSettings.FocusSearchOnOpen;
+        AutoSyncOnNetworkToggle.IsOn = App.CurrentSettings.AutoSyncOnNetwork;
+        GridViewLayoutToggle.IsOn = App.CurrentSettings.GridViewLayout;
         _loadingSettings = false;
     }
 
@@ -63,6 +71,25 @@ public sealed partial class MainWindow : Window
     {
         if (_loadingSettings) return;
         await App.UpdateSettingsAsync(App.CurrentSettings with { AppLockEnabled = AppLockToggle.IsOn });
+    }
+
+    private async void FocusSearchOnOpenToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_loadingSettings) return;
+        await App.UpdateSettingsAsync(App.CurrentSettings with { FocusSearchOnOpen = FocusSearchOnOpenToggle.IsOn });
+    }
+
+    private async void AutoSyncOnNetworkToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_loadingSettings) return;
+        await App.UpdateSettingsAsync(App.CurrentSettings with { AutoSyncOnNetwork = AutoSyncOnNetworkToggle.IsOn });
+    }
+
+    private async void GridViewLayoutToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_loadingSettings) return;
+        await App.UpdateSettingsAsync(App.CurrentSettings with { GridViewLayout = GridViewLayoutToggle.IsOn });
+        ViewModel.NotifySettingsChanged();
     }
 
     private void Navigation_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)

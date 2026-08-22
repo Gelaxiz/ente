@@ -18,36 +18,55 @@
         </Grid>
         <AutoSuggestBox x:Name="SearchBox" Grid.Row="1" Height="42" PlaceholderText="Search codes" QueryIcon="Find"
                         Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-        <ListView Grid.Row="2" ItemsSource="{Binding Codes}" SelectionMode="None">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem"><Setter Property="HorizontalContentAlignment" Value="Stretch" /><Setter Property="Padding" Value="0" /></Style>
-            </ListView.ItemContainerStyle>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Button HorizontalContentAlignment="Stretch" MinHeight="48" Padding="10" Margin="0,1" Background="Transparent" BorderThickness="0"
-                            Click="CopyCode_Click" Tag="{Binding}" ToolTipService.ToolTip="Copy code"
-                            AutomationProperties.Name="{Binding AutomationName}">
-                        <Grid ColumnSpacing="12">
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                            <StackPanel Spacing="1">
-                                <StackPanel Orientation="Horizontal" Spacing="5">
-                                    <FontIcon Glyph="&#xE734;" FontSize="11" Visibility="{Binding IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                    <TextBlock Text="{Binding Issuer}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+        <Grid Grid.Row="2">
+            <ListView ItemsSource="{Binding Codes}" SelectionMode="None" Visibility="{Binding IsGridView, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem"><Setter Property="HorizontalContentAlignment" Value="Stretch" /><Setter Property="Padding" Value="0" /></Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Button HorizontalContentAlignment="Stretch" MinHeight="48" Padding="10" Margin="0,1" Background="Transparent" BorderThickness="0"
+                                Click="CopyCode_Click" Tag="{Binding}" ToolTipService.ToolTip="Copy code"
+                                AutomationProperties.Name="{Binding AutomationName}">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                                <StackPanel Spacing="1">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
+                                        <FontIcon Glyph="&#xE734;" FontSize="11" Visibility="{Binding IsPinned, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        <TextBlock Text="{Binding Issuer}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding AccountName}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
-                                <TextBlock Text="{Binding AccountName}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" />
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" Width="116" Spacing="5">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
-                                    <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="19" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding CountdownText}" FontSize="11" VerticalAlignment="Bottom" />
+                                <StackPanel Grid.Column="1" Width="116" Spacing="5">
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                                        <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="19" FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding CountdownText}" FontSize="11" VerticalAlignment="Bottom" />
+                                    </StackPanel>
+                                    <ProgressBar Value="{Binding Progress}" Height="2" Foreground="{StaticResource AccentBrush}" />
                                 </StackPanel>
+                            </Grid>
+                        </Button>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            <GridView ItemsSource="{Binding Codes}" SelectionMode="None" Visibility="{Binding IsGridView, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <GridView.ItemContainerStyle>
+                    <Style TargetType="GridViewItem"><Setter Property="HorizontalContentAlignment" Value="Stretch" /><Setter Property="Padding" Value="0" /></Style>
+                </GridView.ItemContainerStyle>
+                <GridView.ItemTemplate>
+                    <DataTemplate>
+                        <Button HorizontalContentAlignment="Stretch" MinHeight="64" Width="162" Padding="8" Margin="4" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                                Click="CopyCode_Click" Tag="{Binding}" ToolTipService.ToolTip="Copy code">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="{Binding Issuer}" FontWeight="SemiBold" FontSize="12" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" />
                                 <ProgressBar Value="{Binding Progress}" Height="2" Foreground="{StaticResource AccentBrush}" />
                             </StackPanel>
-                        </Grid>
-                    </Button>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                        </Button>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+            </GridView>
+        </Grid>
         <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6"
                     Visibility="{Binding IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock Text="No matching codes" FontWeight="SemiBold" HorizontalAlignment="Center" />

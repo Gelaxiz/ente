@@ -36,12 +36,16 @@ public sealed class MainViewModel : ObservableObject
     public bool IsEmpty { get => _isEmpty; private set => SetProperty(ref _isEmpty, value); }
     public int TotalCount => _accounts.Count;
     public string StatusMessage { get => _statusMessage; private set => SetProperty(ref _statusMessage, value); }
+    public bool IsGridView => App.CurrentSettings.GridViewLayout;
 
     public async Task ReloadAsync()
     {
+        OnPropertyChanged(nameof(IsGridView));
         _accounts = await _repository.GetAllAsync();
         ApplyFilter();
     }
+
+    public void NotifySettingsChanged() => OnPropertyChanged(nameof(IsGridView));
 
     private void ApplyFilter()
     {

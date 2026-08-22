@@ -38,7 +38,7 @@ public sealed partial class QuickPanelWindow : Window
         await ((MainViewModel)Root.DataContext).ReloadAsync();
         _timer.Start();
         WindowSizing.PlaceAtWorkAreaBottomRight(this, 380, 560, 16);
-        SearchBox.Focus(FocusState.Programmatic);
+        if (App.CurrentSettings.FocusSearchOnOpen) SearchBox.Focus(FocusState.Programmatic);
     }
 
     private async void CopyCode_Click(object sender, RoutedEventArgs e)

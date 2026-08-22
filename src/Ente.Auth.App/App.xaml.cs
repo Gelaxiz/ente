@@ -39,7 +39,7 @@ public sealed partial class App : Application
     private static readonly SemaphoreSlim PresenceGateLock = new(1, 1);
     private static readonly SemaphoreSlim SyncLifecycleGate = new(1, 1);
     private static CancellationTokenSource _syncCancellation = new();
-    private static bool _isLocked = true;
+    private static bool _isLocked;
 
     public static AppSettings CurrentSettings { get; private set; } = new();
     public static bool IsQuitting { get; private set; }
@@ -96,7 +96,19 @@ public sealed partial class App : Application
             try { await _sessionStore.ClearAsync(); } catch { }
         }
 
+        _isLocked = CurrentSettings.AppLockEnabled;
         InitializeTrayIcon();
+        Windows.Networking.Connectivity.NetworkInformation.NetworkStatusChanged += async _ =>
+        {
+            if (CurrentSettings.AutoSyncOnNetwork && _session is not null)
+            {
+                var profile = Windows.Networking.Connectivity.NetworkInformation.GetInternetConnectionProfile();
+                if (profile is not null && profile.GetNetworkConnectivityLevel() == Windows.Networking.Connectivity.NetworkConnectivityLevel.InternetAccess)
+                {
+                    try { await SyncNowAsync(); } catch { }
+                }
+            }
+        };
         if (_session is not null) _ = SyncAfterStartupAsync();
         var activation = AppInstance.GetCurrent().GetActivatedEventArgs();
         var startupActivation = activation.Kind == ExtendedActivationKind.StartupTask;
@@ -128,7 +140,7 @@ public sealed partial class App : Application
     public static async Task ShowMainWindowAsync()
     {
         if (_viewModel is null) return;
-        if (CurrentSettings.AppLockEnabled && _isLocked && !await VerifyPresenceAsync("Unlock Ente Auth Community"))
+        if (_isLocked && !await VerifyPresenceAsync("Unlock Ente Auth Community"))
         {
             ShowPresenceFailure();
             return;
@@ -169,7 +181,7 @@ public sealed partial class App : Application
     {
         if (_quickViewModel is null) return;
         _quickPanel?.Hide();
-        if (CurrentSettings.AppLockEnabled && _isLocked && !await VerifyPresenceAsync("Open your authenticator codes"))
+        if (_isLocked && !await VerifyPresenceAsync("Open your authenticator codes"))
         {
             ShowPresenceFailure();
             return;

@@ -5,4 +5,7 @@ public sealed record AppSettings(
     bool LaunchAtSignIn = false,
     int ClipboardClearSeconds = 30,
     bool UseSystemTheme = true,
-    bool AppLockEnabled = true);
+    bool AppLockEnabled = true,
+    bool FocusSearchOnOpen = true,
+    bool GridViewLayout = false,
+    bool AutoSyncOnNetwork = false);
