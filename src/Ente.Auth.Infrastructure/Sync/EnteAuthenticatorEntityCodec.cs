@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using Ente.Auth.Core.Abstractions;
 using Ente.Auth.Core.Models;
 using Ente.Auth.Core.Otp;
@@ -11,7 +12,9 @@ public sealed class EnteAuthenticatorEntityCodec(IEnteCryptoCodec crypto)
 {
     public (string EncryptedData, string Header) Encrypt(OtpAccount account, ReadOnlySpan<byte> authenticatorKey)
     {
-        var plaintext = Encoding.UTF8.GetBytes(OtpTransferCodec.ExportUri(account));
+        var uri = OtpTransferCodec.ExportUri(account);
+        var json = JsonSerializer.Serialize(uri);
+        var plaintext = Encoding.UTF8.GetBytes(json);
         try
         {
             var result = crypto.EncryptData(plaintext, authenticatorKey);
@@ -36,7 +39,16 @@ public sealed class EnteAuthenticatorEntityCodec(IEnteCryptoCodec crypto)
         }
         catch (FormatException error) { throw new InvalidDataException("The Ente entity contains invalid Base64.", error); }
 
-        try { return OtpAuthUriParser.Parse(Encoding.UTF8.GetString(plaintext)); }
+        try
+        {
+            var json = Encoding.UTF8.GetString(plaintext);
+            string? uri;
+            try { uri = JsonSerializer.Deserialize<string>(json); }
+            catch (JsonException) { uri = json; }
+
+            if (string.IsNullOrWhiteSpace(uri)) return null;
+            return OtpAuthUriParser.Parse(uri);
+        }
         catch (FormatException) { return null; }
         finally { CryptographicOperations.ZeroMemory(plaintext); }
     }

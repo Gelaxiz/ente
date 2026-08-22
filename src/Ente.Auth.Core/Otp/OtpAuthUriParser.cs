@@ -7,14 +7,21 @@ public static class OtpAuthUriParser
 {
     public static OtpAccount Parse(string value)
     {
-        if (!Uri.TryCreate(value, UriKind.Absolute, out var uri) || !string.Equals(uri.Scheme, "otpauth", StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrWhiteSpace(value)) throw new FormatException("Empty URI.");
+        if (!value.StartsWith("otpauth://", StringComparison.OrdinalIgnoreCase))
             throw new FormatException("The value is not a valid otpauth URI.");
+        
+        // C# Uri.TryCreate can be overly strict, so we fix basic issues
+        var safeValue = value.Replace(" ", "%20", StringComparison.Ordinal);
+        if (!Uri.TryCreate(safeValue, UriKind.Absolute, out var uri))
+            throw new FormatException("The value could not be parsed as a URI.");
 
         var kind = uri.Host.ToLowerInvariant() switch
         {
             "totp" => OtpKind.Totp,
             "hotp" => OtpKind.Hotp,
-            _ => throw new FormatException("Only TOTP and HOTP URIs are supported."),
+            "steam" => OtpKind.Steam,
+            _ => throw new FormatException($"Unsupported OTP scheme: {uri.Host}"),
         };
         var query = ParseQuery(uri.Query);
         if (!query.TryGetValue("secret", out var secret) || string.IsNullOrWhiteSpace(secret))
