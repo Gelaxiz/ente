@@ -13,6 +13,7 @@ using System.Security.Cryptography;
 using H.NotifyIcon;
 using Microsoft.UI.Windowing;
 using Microsoft.Windows.AppLifecycle;
+using Microsoft.Win32;
 using Windows.ApplicationModel;
 using Windows.Storage;
 using AppInstance = Microsoft.Windows.AppLifecycle.AppInstance;
@@ -111,7 +112,7 @@ public sealed partial class App : Application
         };
         if (_session is not null) _ = SyncAfterStartupAsync();
         var activation = AppInstance.GetCurrent().GetActivatedEventArgs();
-        var startupActivation = activation.Kind == ExtendedActivationKind.StartupTask;
+        var startupActivation = Environment.GetCommandLineArgs().Contains("--autostart") || activation.Kind == ExtendedActivationKind.StartupTask;
         var disposition = LaunchPolicy.Resolve(startupActivation, CurrentSettings.LaunchMode);
         if (disposition is LaunchDisposition.ShowWindow or LaunchDisposition.ShowMinimized)
         {
@@ -226,15 +227,17 @@ public sealed partial class App : Application
     {
         try
         {
-            var startup = await StartupTask.GetAsync("EnteAuthCommunityStartup");
-            if (enabled)
+            using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+            if (key is not null)
             {
-                var state = await startup.RequestEnableAsync();
-                enabled = state is StartupTaskState.Enabled or StartupTaskState.EnabledByPolicy;
-            }
-            else
-            {
-                startup.Disable();
+                if (enabled)
+                {
+                    key.SetValue("EnteAuthCommunity", $"\"{Environment.ProcessPath}\" --autostart");
+                }
+                else
+                {
+                    key.DeleteValue("EnteAuthCommunity", false);
+                }
             }
             await UpdateSettingsAsync(CurrentSettings with { LaunchAtSignIn = enabled });
             return enabled;
