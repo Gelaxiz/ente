@@ -55,11 +55,11 @@
                 </GridView.ItemContainerStyle>
                 <GridView.ItemTemplate>
                     <DataTemplate>
-                        <Button HorizontalContentAlignment="Stretch" MinHeight="64" Width="162" Padding="8" Margin="4" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1"
+                        <Button HorizontalContentAlignment="Stretch" MinHeight="50" Width="188" Padding="6" Margin="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4"
                                 Click="CopyCode_Click" Tag="{Binding}" ToolTipService.ToolTip="Copy code">
-                            <StackPanel Spacing="4">
-                                <TextBlock Text="{Binding Issuer}" FontWeight="SemiBold" FontSize="12" TextTrimming="CharacterEllipsis" />
-                                <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="{Binding Issuer}" FontWeight="SemiBold" FontSize="11" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" />
                                 <ProgressBar Value="{Binding Progress}" Height="2" Foreground="{StaticResource AccentBrush}" />
                             </StackPanel>
                         </Button>

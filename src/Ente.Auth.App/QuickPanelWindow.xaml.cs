@@ -13,7 +13,7 @@ public sealed partial class QuickPanelWindow : Window
         InitializeComponent();
         Root.DataContext = viewModel;
         AppWindow.IsShownInSwitchers = false;
-        AppWindow.Resize(WindowSizing.ToPixels(this, 380, 560));
+        AppWindow.Resize(WindowSizing.ToPixels(this, 420, 560));
         if (AppWindow.Presenter is OverlappedPresenter presenter)
         {
             presenter.SetBorderAndTitleBar(false, false);
@@ -37,7 +37,7 @@ public sealed partial class QuickPanelWindow : Window
     {
         await ((MainViewModel)Root.DataContext).ReloadAsync();
         _timer.Start();
-        WindowSizing.PlaceAtWorkAreaBottomRight(this, 380, 560, 16);
+        WindowSizing.PlaceAtWorkAreaBottomRight(this, 420, 560, 16);
         if (App.CurrentSettings.FocusSearchOnOpen) SearchBox.Focus(FocusState.Programmatic);
     }
 
