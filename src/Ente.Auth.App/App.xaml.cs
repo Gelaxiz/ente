@@ -14,6 +14,7 @@ using H.NotifyIcon;
 using Microsoft.UI.Windowing;
 using Microsoft.Windows.AppLifecycle;
 using Windows.ApplicationModel;
+using Windows.Storage;
 using AppInstance = Microsoft.Windows.AppLifecycle.AppInstance;
 
 namespace Ente.Auth.App;
@@ -180,7 +181,9 @@ public sealed partial class App : Application
         _isLocked = false;
         await _quickViewModel.ReloadAsync();
         _quickPanel ??= new QuickPanelWindow(_quickViewModel);
-        _quickPanel.ShowRelativeToCursor();
+        await _quickPanel.PrepareAsync();
+        _quickPanel.Show();
+        _quickPanel.Activate();
     }
 
     private static void Lock()
