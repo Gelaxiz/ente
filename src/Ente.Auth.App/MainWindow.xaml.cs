@@ -100,6 +100,15 @@ public sealed partial class MainWindow : Window
         CodesSurface.Visibility = settings ? Visibility.Collapsed : Visibility.Visible;
     }
 
+    private async void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+    {
+        if (ViewModel.Codes.FirstOrDefault() is { } first)
+        {
+            await ViewModel.CopyCommand.ExecuteAsync(first);
+            if (ViewModel.StatusMessage.StartsWith("Copied", StringComparison.Ordinal)) this.Hide();
+        }
+    }
+
     private async void AddCode_Click(object sender, RoutedEventArgs e)
     {
         var input = new TextBox { PlaceholderText = "otpauth://totp/...", MinWidth = 430, TextWrapping = TextWrapping.Wrap };

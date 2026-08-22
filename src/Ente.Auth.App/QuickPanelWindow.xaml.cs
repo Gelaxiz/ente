@@ -40,6 +40,16 @@ public sealed partial class QuickPanelWindow : Window
         if (App.CurrentSettings.FocusSearchOnOpen) SearchBox.Focus(FocusState.Programmatic);
     }
 
+    private async void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+    {
+        var viewModel = (MainViewModel)Root.DataContext;
+        if (viewModel.Codes.FirstOrDefault() is { } first)
+        {
+            await viewModel.CopyCommand.ExecuteAsync(first);
+            if (viewModel.StatusMessage.StartsWith("Copied", StringComparison.Ordinal)) this.Hide();
+        }
+    }
+
     private async void CopyCode_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button { Tag: OtpCodeViewModel code })

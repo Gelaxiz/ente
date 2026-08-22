@@ -60,7 +60,7 @@
 
                     <AutoSuggestBox x:Name="SearchBox" Grid.Row="1" Margin="0,22,0,12" Height="44"
                                     PlaceholderText="Search accounts" QueryIcon="Find"
-                                    Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" QuerySubmitted="SearchBox_QuerySubmitted" />
 
                     <Grid Grid.Row="2">
                         <ListView ItemsSource="{Binding Codes}" SelectionMode="None" IsItemClickEnabled="False" Visibility="{Binding IsGridView, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
