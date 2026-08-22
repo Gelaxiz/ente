@@ -20,7 +20,7 @@ public sealed class EnteAuthenticatorEntityCodec(IEnteCryptoCodec crypto)
         finally { CryptographicOperations.ZeroMemory(plaintext); }
     }
 
-    public OtpAccount Decrypt(AuthenticatorEntityDto entity, ReadOnlySpan<byte> authenticatorKey)
+    public OtpAccount? Decrypt(AuthenticatorEntityDto entity, ReadOnlySpan<byte> authenticatorKey)
     {
         if (entity.IsDeleted) throw new InvalidOperationException("A deleted authenticator entity has no payload.");
         if (string.IsNullOrWhiteSpace(entity.EncryptedData) || string.IsNullOrWhiteSpace(entity.Header))
@@ -37,6 +37,7 @@ public sealed class EnteAuthenticatorEntityCodec(IEnteCryptoCodec crypto)
         catch (FormatException error) { throw new InvalidDataException("The Ente entity contains invalid Base64.", error); }
 
         try { return OtpAuthUriParser.Parse(Encoding.UTF8.GetString(plaintext)); }
+        catch (FormatException) { return null; }
         finally { CryptographicOperations.ZeroMemory(plaintext); }
     }
 }

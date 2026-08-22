@@ -61,7 +61,11 @@ public sealed class EnteAuthenticatorSyncService(
             {
                 maximum = Math.Max(maximum, entity.UpdatedAt);
                 if (entity.IsDeleted) await state.ApplyRemoteDeletionAsync(entity.Id, cancellationToken);
-                else await state.ApplyRemoteAsync(entityCodec.Decrypt(entity, authenticatorKey.Span), entity.Id, entity.UpdatedAt, cancellationToken);
+                else
+                {
+                    var decrypted = entityCodec.Decrypt(entity, authenticatorKey.Span);
+                    if (decrypted is not null) await state.ApplyRemoteAsync(decrypted, entity.Id, entity.UpdatedAt, cancellationToken);
+                }
                 downloaded++;
             }
             await state.SetCursorAsync(maximum, cancellationToken);
