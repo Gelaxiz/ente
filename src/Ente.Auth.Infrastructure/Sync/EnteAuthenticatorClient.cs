@@ -59,6 +59,8 @@ public sealed class EnteAuthenticatorClient(HttpClient httpClient, Func<string?>
         if (string.IsNullOrWhiteSpace(token)) throw new InvalidOperationException("An Ente authentication token is required.");
         var request = new HttpRequestMessage(method, path);
         request.Headers.Add("X-Auth-Token", token);
+        request.Headers.Add("X-Client-Package", "io.ente.auth.windows");
+        request.Headers.Add("X-Client-Version", "1.0.0");
         return request;
     }
 }

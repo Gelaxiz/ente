@@ -268,7 +268,7 @@ public sealed partial class App : Application
             finally { CryptographicOperations.ZeroMemory(authenticatorKey); }
         }
         catch (OperationCanceledException) when (_syncCancellation.IsCancellationRequested) { throw; }
-        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized || ex.Message.Contains("401"))
         {
             LastSyncError = "Session expired or rejected by Ente. Automatically signing out.";
             _ = SignOutAsync();
