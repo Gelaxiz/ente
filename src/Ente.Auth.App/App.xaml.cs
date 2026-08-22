@@ -182,10 +182,18 @@ public sealed partial class App : Application
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     private static extern bool SetForegroundWindow(IntPtr hWnd);
 
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool IsWindowVisible(IntPtr hWnd);
+
     private static async Task ShowQuickPanelAsync()
     {
         if (_quickViewModel is null) return;
-        _quickPanel?.Hide();
+        
+        if (_quickPanel is not null && IsWindowVisible(WinRT.Interop.WindowNative.GetWindowHandle(_quickPanel)))
+        {
+            _quickPanel.Hide();
+            return;
+        }
         if (_isLocked && !await VerifyPresenceAsync("Open your authenticator codes"))
         {
             ShowPresenceFailure();
