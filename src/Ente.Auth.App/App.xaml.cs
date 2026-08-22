@@ -76,11 +76,11 @@ public sealed partial class App : Application
         var crypto = new LibsodiumEnteCryptoCodec();
         _sessionStore = new DpapiEnteSessionStore(Path.Combine(dataPath, "ente-session.bin"), protector);
         _authenticatorKeyStore = new DpapiAuthenticatorKeyStore(Path.Combine(dataPath, "authenticator-key.bin"), protector);
-        var accountHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.com/") };
+        var accountHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.io/") };
         accountHttp.DefaultRequestHeaders.Add("X-Client-Package", "io.ente.auth.windows");
         accountHttp.DefaultRequestHeaders.Add("X-Client-Version", "1.0.0");
         _authenticationService = new EnteAuthenticationService(new EnteAccountClient(accountHttp), crypto);
-        var authenticatorHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.com/") };
+        var authenticatorHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.io/") };
         authenticatorHttp.DefaultRequestHeaders.Add("X-Client-Package", "io.ente.auth.windows");
         authenticatorHttp.DefaultRequestHeaders.Add("X-Client-Version", "1.0.0");
         var authenticatorClient = new EnteAuthenticatorClient(authenticatorHttp, () => _session?.AuthToken);
