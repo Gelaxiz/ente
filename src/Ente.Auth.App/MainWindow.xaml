@@ -85,8 +85,11 @@
                                             <TextBlock Text="{Binding Issuer}" FontSize="15" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                                             <TextBlock Text="{Binding AccountName}" FontSize="13" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" />
                                         </StackPanel>
-                                        <StackPanel Grid.Column="1" Width="142" VerticalAlignment="Center" Spacing="6">
-                                            <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="23" FontWeight="SemiBold" CharacterSpacing="75" HorizontalAlignment="Right" />
+                                        <StackPanel Grid.Column="1" Width="180" VerticalAlignment="Center" Spacing="6">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                                                <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="23" FontWeight="SemiBold" CharacterSpacing="75" />
+                                                <TextBlock Text="{Binding CountdownText}" FontSize="12" VerticalAlignment="Bottom" Margin="0,0,0,3" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                            </StackPanel>
                                             <ProgressBar Value="{Binding Progress}" Maximum="100" Height="2" Foreground="{StaticResource AccentBrush}" />
                                         </StackPanel>
                                         <Button Grid.Column="2" Width="40" Height="40" Padding="0" ToolTipService.ToolTip="Copy code"
@@ -124,7 +127,10 @@
                                             <TextBlock Text="{Binding AccountName}" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextTrimming="CharacterEllipsis" />
                                         </StackPanel>
                                         <StackPanel Grid.Row="1" Margin="0,12,0,0" Spacing="4">
-                                            <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
+                                                <TextBlock Text="{Binding Code}" FontFamily="Cascadia Mono" FontSize="20" FontWeight="SemiBold" />
+                                                <TextBlock Text="{Binding CountdownText}" FontSize="12" VerticalAlignment="Bottom" Margin="0,0,0,2" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                            </StackPanel>
                                             <ProgressBar Value="{Binding Progress}" Maximum="100" Height="2" Foreground="{StaticResource AccentBrush}" />
                                         </StackPanel>
                                         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,12,0,0">
