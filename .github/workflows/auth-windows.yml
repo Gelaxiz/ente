@@ -31,8 +31,13 @@ jobs:
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
           path: setup.iss
-      - name: Upload Artifact
+      - name: Upload Installer Artifact
         uses: actions/upload-artifact@v4
         with:
           name: EnteAuth-Setup
           path: Output/EnteAuth-Setup.exe
+      - name: Upload Portable Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EnteAuth-Portable
+          path: publish_output/Ente.Auth.App.exe
