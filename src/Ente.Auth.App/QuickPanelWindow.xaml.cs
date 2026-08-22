@@ -6,7 +6,10 @@ namespace Ente.Auth.App;
 
 public sealed partial class QuickPanelWindow : Window
 {
-    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(1) };
+    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(200) };
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern IntPtr GetForegroundWindow();
 
     public QuickPanelWindow(MainViewModel viewModel)
     {
@@ -20,6 +23,7 @@ public sealed partial class QuickPanelWindow : Window
             presenter.IsResizable = false;
             presenter.IsMaximizable = false;
             presenter.IsMinimizable = false;
+            presenter.IsAlwaysOnTop = true;
         }
         Activated += (_, args) =>
         {
@@ -33,7 +37,16 @@ public sealed partial class QuickPanelWindow : Window
                 DispatcherQueue.TryEnqueue(() => SearchBox.Focus(FocusState.Keyboard));
             }
         };
-        _timer.Tick += (_, _) => ((MainViewModel)Root.DataContext).Tick();
+        _timer.Tick += (_, _) =>
+        {
+            ((MainViewModel)Root.DataContext).Tick();
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            if (GetForegroundWindow() != hwnd)
+            {
+                _timer.Stop();
+                this.Hide();
+            }
+        };
     }
 
     public async Task PrepareAsync()

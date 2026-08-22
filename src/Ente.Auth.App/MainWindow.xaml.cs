@@ -20,7 +20,7 @@ namespace Ente.Auth.App;
 
 public sealed partial class MainWindow : Window
 {
-    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromSeconds(1) };
+    private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(200) };
     private readonly EnteEncryptedBackupCodec _backupCodec;
     private bool _loadingSettings = true;
     private bool _backupOperationInProgress;
@@ -64,6 +64,7 @@ public sealed partial class MainWindow : Window
         FocusSearchOnOpenToggle.IsOn = App.CurrentSettings.FocusSearchOnOpen;
         AutoSyncOnNetworkToggle.IsOn = App.CurrentSettings.AutoSyncOnNetwork;
         GridViewLayoutToggle.IsOn = App.CurrentSettings.GridViewLayout;
+        EnableGlobalShortcutToggle.IsOn = App.CurrentSettings.EnableGlobalShortcut;
         _loadingSettings = false;
     }
 
@@ -83,6 +84,12 @@ public sealed partial class MainWindow : Window
     {
         if (_loadingSettings) return;
         await App.UpdateSettingsAsync(App.CurrentSettings with { AutoSyncOnNetwork = AutoSyncOnNetworkToggle.IsOn });
+    }
+
+    private async void EnableGlobalShortcutToggle_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_loadingSettings) return;
+        await App.UpdateSettingsAsync(App.CurrentSettings with { EnableGlobalShortcut = EnableGlobalShortcutToggle.IsOn });
     }
 
     private async void GridViewLayoutToggle_Toggled(object sender, RoutedEventArgs e)

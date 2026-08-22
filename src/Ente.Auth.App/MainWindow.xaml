@@ -186,6 +186,7 @@
                         <ToggleSwitch x:Name="AppLockToggle" Header="Require app lock" Toggled="AppLockToggle_Toggled" />
                         <ToggleSwitch x:Name="FocusSearchOnOpenToggle" Header="Focus search bar on open" Toggled="FocusSearchOnOpenToggle_Toggled" />
                         <ToggleSwitch x:Name="AutoSyncOnNetworkToggle" Header="Auto-sync when internet is available" Toggled="AutoSyncOnNetworkToggle_Toggled" />
+                        <ToggleSwitch x:Name="EnableGlobalShortcutToggle" Header="Enable global shortcut (Ctrl+Shift+E) to open tray" Toggled="EnableGlobalShortcutToggle_Toggled" />
                         <ToggleSwitch x:Name="GridViewLayoutToggle" Header="Use 2-column grid layout (compact)" Toggled="GridViewLayoutToggle_Toggled" />
                         <StackPanel Spacing="8">
                             <TextBlock Text="About" FontWeight="SemiBold" />

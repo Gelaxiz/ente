@@ -98,6 +98,7 @@ public sealed partial class App : Application
         }
 
         _isLocked = CurrentSettings.AppLockEnabled;
+        ApplyGlobalHotkeySetting();
         InitializeTrayIcon();
         Windows.Networking.Connectivity.NetworkInformation.NetworkStatusChanged += async _ =>
         {
@@ -217,10 +218,26 @@ public sealed partial class App : Application
         finally { PresenceGateLock.Release(); }
     }
 
+    private static Window? _hiddenHotkeyWindow;
+
+    public static void ApplyGlobalHotkeySetting()
+    {
+        if (CurrentSettings.EnableGlobalShortcut)
+        {
+            _hiddenHotkeyWindow ??= new Window();
+            GlobalHotkey.Register(_hiddenHotkeyWindow, () => _ = ShowQuickPanelAsync());
+        }
+        else
+        {
+            GlobalHotkey.Unregister();
+        }
+    }
+
     public static async Task UpdateSettingsAsync(AppSettings settings)
     {
         CurrentSettings = settings;
         if (_settingsStore is not null) await _settingsStore.SaveAsync(settings);
+        ApplyGlobalHotkeySetting();
     }
 
     public static async Task<bool> SetLaunchAtSignInAsync(bool enabled)

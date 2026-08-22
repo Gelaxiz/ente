@@ -8,4 +8,5 @@ public sealed record AppSettings(
     bool AppLockEnabled = true,
     bool FocusSearchOnOpen = true,
     bool GridViewLayout = false,
-    bool AutoSyncOnNetwork = false);
+    bool AutoSyncOnNetwork = false,
+    bool EnableGlobalShortcut = false);
