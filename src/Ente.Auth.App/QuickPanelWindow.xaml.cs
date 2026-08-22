@@ -28,6 +28,10 @@ public sealed partial class QuickPanelWindow : Window
                 _timer.Stop();
                 this.Hide();
             }
+            else if (App.CurrentSettings.FocusSearchOnOpen)
+            {
+                DispatcherQueue.TryEnqueue(() => SearchBox.Focus(FocusState.Keyboard));
+            }
         };
         _timer.Tick += (_, _) => ((MainViewModel)Root.DataContext).Tick();
     }
@@ -37,7 +41,6 @@ public sealed partial class QuickPanelWindow : Window
         await ((MainViewModel)Root.DataContext).ReloadAsync();
         _timer.Start();
         WindowSizing.PlaceAtWorkAreaBottomRight(this, 420, 560, 16);
-        if (App.CurrentSettings.FocusSearchOnOpen) SearchBox.Focus(FocusState.Programmatic);
     }
 
     private async void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)

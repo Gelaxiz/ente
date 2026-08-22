@@ -42,7 +42,7 @@ public sealed partial class MainWindow : Window
         Activated += (_, args) =>
         {
             if (args.WindowActivationState != WindowActivationState.Deactivated && App.CurrentSettings.FocusSearchOnOpen)
-                SearchBox.Focus(FocusState.Programmatic);
+                DispatcherQueue.TryEnqueue(() => SearchBox.Focus(FocusState.Keyboard));
         };
         _timer.Tick += (_, _) =>
         {
