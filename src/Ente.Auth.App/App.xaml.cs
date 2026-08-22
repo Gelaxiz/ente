@@ -75,9 +75,9 @@ public sealed partial class App : Application
         var crypto = new LibsodiumEnteCryptoCodec();
         _sessionStore = new DpapiEnteSessionStore(Path.Combine(dataPath, "ente-session.bin"), protector);
         _authenticatorKeyStore = new DpapiAuthenticatorKeyStore(Path.Combine(dataPath, "authenticator-key.bin"), protector);
-        var accountHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.io/") };
+        var accountHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.com/") };
         _authenticationService = new EnteAuthenticationService(new EnteAccountClient(accountHttp), crypto);
-        var authenticatorHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.io/") };
+        var authenticatorHttp = new HttpClient { BaseAddress = new Uri("https://api.ente.com/") };
         var authenticatorClient = new EnteAuthenticatorClient(authenticatorHttp, () => _session?.AuthToken);
         _authenticatorKeyManager = new EnteAuthenticatorKeyManager(authenticatorClient, crypto, _authenticatorKeyStore);
         _syncStateStore = new SqliteAuthenticatorSyncStateStore(connectionString, protector);
