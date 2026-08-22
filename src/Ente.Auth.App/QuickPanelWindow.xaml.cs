@@ -60,7 +60,9 @@ public sealed partial class QuickPanelWindow : Window
     public async Task PrepareAsync()
     {
         _focusGraceTicks = 0;
-        await ((MainViewModel)Root.DataContext).ReloadAsync();
+        var viewModel = (MainViewModel)Root.DataContext;
+        viewModel.SearchText = string.Empty;
+        await viewModel.ReloadAsync();
         _timer.Start();
         WindowSizing.PlaceAtWorkAreaBottomRight(this, 420, 560, 16);
     }
@@ -110,7 +112,7 @@ public sealed partial class QuickPanelWindow : Window
         this.Hide();
     }
 
-    private void Root_KeyDown(object sender, KeyRoutedEventArgs e)
+    private void Root_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (e.Key != Windows.System.VirtualKey.Escape) return;
         _timer.Stop();
