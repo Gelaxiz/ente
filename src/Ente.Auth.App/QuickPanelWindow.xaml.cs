@@ -7,6 +7,7 @@ namespace Ente.Auth.App;
 public sealed partial class QuickPanelWindow : Window
 {
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(200) };
+    private int _focusGraceTicks;
 
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
@@ -43,14 +44,22 @@ public sealed partial class QuickPanelWindow : Window
             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             if (GetForegroundWindow() != hwnd)
             {
-                _timer.Stop();
-                this.Hide();
+                if (_focusGraceTicks++ > 2)
+                {
+                    _timer.Stop();
+                    this.Hide();
+                }
+            }
+            else
+            {
+                _focusGraceTicks = 3;
             }
         };
     }
 
     public async Task PrepareAsync()
     {
+        _focusGraceTicks = 0;
         await ((MainViewModel)Root.DataContext).ReloadAsync();
         _timer.Start();
         WindowSizing.PlaceAtWorkAreaBottomRight(this, 420, 560, 16);

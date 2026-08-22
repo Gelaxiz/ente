@@ -9,4 +9,5 @@ public sealed record AppSettings(
     bool FocusSearchOnOpen = true,
     bool GridViewLayout = false,
     bool AutoSyncOnNetwork = false,
-    bool EnableGlobalShortcut = false);
+    bool EnableGlobalShortcut = false,
+    string GlobalShortcut = "Ctrl+Shift+E");

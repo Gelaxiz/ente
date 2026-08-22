@@ -65,6 +65,7 @@ public sealed partial class MainWindow : Window
         AutoSyncOnNetworkToggle.IsOn = App.CurrentSettings.AutoSyncOnNetwork;
         GridViewLayoutToggle.IsOn = App.CurrentSettings.GridViewLayout;
         EnableGlobalShortcutToggle.IsOn = App.CurrentSettings.EnableGlobalShortcut;
+        GlobalShortcutBox.Text = App.CurrentSettings.GlobalShortcut;
         _loadingSettings = false;
     }
 
@@ -90,6 +91,12 @@ public sealed partial class MainWindow : Window
     {
         if (_loadingSettings) return;
         await App.UpdateSettingsAsync(App.CurrentSettings with { EnableGlobalShortcut = EnableGlobalShortcutToggle.IsOn });
+    }
+
+    private async void GlobalShortcutBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_loadingSettings) return;
+        await App.UpdateSettingsAsync(App.CurrentSettings with { GlobalShortcut = GlobalShortcutBox.Text });
     }
 
     private async void GridViewLayoutToggle_Toggled(object sender, RoutedEventArgs e)

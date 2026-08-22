@@ -1,0 +1,176 @@
+test-and-build	Set up job	﻿2026-08-21T23:06:13.7426245Z Current runner version: '2.336.0'
+test-and-build	Set up job	2026-08-21T23:06:13.7483869Z ##[group]Runner Image Provisioner
+test-and-build	Set up job	2026-08-21T23:06:13.7485261Z Hosted Compute Agent
+test-and-build	Set up job	2026-08-21T23:06:13.7486202Z Version: 20260729.566
+test-and-build	Set up job	2026-08-21T23:06:13.7487137Z Commit: cf7153fe6e25b664e8693c24944bf2b00355d109
+test-and-build	Set up job	2026-08-21T23:06:13.7488254Z Build Date: 2026-07-29T19:17:02Z
+test-and-build	Set up job	2026-08-21T23:06:13.7489301Z Worker ID: {3ed52a99-7432-4412-bd03-7f113595be70}
+test-and-build	Set up job	2026-08-21T23:06:13.7490397Z Azure Region: westus3
+test-and-build	Set up job	2026-08-21T23:06:13.7491255Z ##[endgroup]
+test-and-build	Set up job	2026-08-21T23:06:13.7493179Z ##[group]Operating System
+test-and-build	Set up job	2026-08-21T23:06:13.7494162Z Microsoft Windows Server 2025
+test-and-build	Set up job	2026-08-21T23:06:13.7495122Z 10.0.26100
+test-and-build	Set up job	2026-08-21T23:06:13.7495918Z Datacenter
+test-and-build	Set up job	2026-08-21T23:06:13.7496691Z ##[endgroup]
+test-and-build	Set up job	2026-08-21T23:06:13.7497471Z ##[group]Runner Image
+test-and-build	Set up job	2026-08-21T23:06:13.7498324Z Image: windows-2025-vs2026
+test-and-build	Set up job	2026-08-21T23:06:13.7499236Z Version: 20260818.207.1
+test-and-build	Set up job	2026-08-21T23:06:13.7501134Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20260818.207/images/windows/Windows2025-VS2026-Readme.md
+test-and-build	Set up job	2026-08-21T23:06:13.7504793Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20260818.207
+test-and-build	Set up job	2026-08-21T23:06:13.7506395Z ##[endgroup]
+test-and-build	Set up job	2026-08-21T23:06:13.7508081Z ##[group]GITHUB_TOKEN Permissions
+test-and-build	Set up job	2026-08-21T23:06:13.7510417Z Contents: read
+test-and-build	Set up job	2026-08-21T23:06:13.7511366Z Metadata: read
+test-and-build	Set up job	2026-08-21T23:06:13.7512159Z ##[endgroup]
+test-and-build	Set up job	2026-08-21T23:06:13.7514784Z Secret source: Actions
+test-and-build	Set up job	2026-08-21T23:06:13.7516307Z Prepare workflow directory
+test-and-build	Set up job	2026-08-21T23:06:13.7966703Z Prepare all required actions
+test-and-build	Set up job	2026-08-21T23:06:13.8016426Z Getting action download info
+test-and-build	Set up job	2026-08-21T23:06:14.1107140Z Download action repository 'actions/checkout@v5' (SHA:fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09)
+test-and-build	Set up job	2026-08-21T23:06:14.2424972Z Download action repository 'actions/setup-dotnet@v5' (SHA:26b0ec14cb23fa6904739307f278c14f94c95bf1)
+test-and-build	Set up job	2026-08-21T23:06:14.8867355Z Download action repository 'Minionguyjpro/Inno-Setup-Action@v1.2.2' (SHA:b8e8eb5936437c243592fda645c96dfc6488c275)
+test-and-build	Set up job	2026-08-21T23:06:15.7662361Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+test-and-build	Set up job	2026-08-21T23:06:16.1310756Z Complete job name: test-and-build
+test-and-build	Run actions/checkout@v5	﻿2026-08-21T23:06:16.3026402Z ##[group]Run actions/checkout@v5
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3027917Z with:
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3028715Z   repository: Gelaxiz/ente
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3036483Z   token: ***
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3037263Z   ssh-strict: true
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3038061Z   ssh-user: git
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3038880Z   persist-credentials: true
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3039772Z   clean: true
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3040593Z   sparse-checkout-cone-mode: true
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3041549Z   fetch-depth: 1
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3042337Z   fetch-tags: false
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3043150Z   show-progress: true
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3043966Z   lfs: false
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3044736Z   submodules: false
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3045995Z   set-safe-directory: true
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3046953Z   allow-unsafe-pr-checkout: false
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.3048218Z ##[endgroup]
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.4549862Z Syncing repository: Gelaxiz/ente
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.4552916Z ##[group]Getting Git version info
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.4554034Z Working directory is 'D:\a\ente\ente'
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.5637031Z [command]"C:\Program Files\Git\bin\git.exe" version
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.9191462Z git version 2.55.0.windows.4
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.9239697Z ##[endgroup]
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.9259044Z Temporarily overriding HOME='D:\a\_temp\e2d07277-d1bf-49f2-b0f8-e3df97bdbbdc' before making global git config changes
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.9260006Z Adding repository directory to the temporary git global config as a safe directory
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.9269521Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\ente\ente
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.9830751Z Deleting the contents of 'D:\a\ente\ente'
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.9837717Z ##[group]Initializing the repository
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:16.9846116Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\ente\ente
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:17.0708192Z Initialized empty Git repository in D:/a/ente/ente/.git/
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:17.0757450Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/Gelaxiz/ente
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:17.1289427Z ##[endgroup]
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:17.1290115Z ##[group]Disabling automatic garbage collection
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:17.1299638Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:17.1582937Z ##[endgroup]
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:17.1583511Z ##[group]Setting up auth
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:17.1595922Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:17.1907821Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:18.5375260Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:18.5659595Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:19.0762144Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:19.1045806Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:19.6178533Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:19.6477249Z ##[endgroup]
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:19.6477789Z ##[group]Fetching the repository
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:19.6490687Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +0c6c2a563673dcddc8d2b00d4668ec3ab20fb2ee:refs/remotes/origin/main
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.3184082Z From https://github.com/Gelaxiz/ente
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.3184996Z  * [new ref]         0c6c2a563673dcddc8d2b00d4668ec3ab20fb2ee -> origin/main
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.3222767Z ##[endgroup]
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.3223291Z ##[group]Determining the checkout info
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.3226059Z ##[endgroup]
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.3236009Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.3661891Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.3947893Z ##[group]Checking out the ref
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.3958112Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B main refs/remotes/origin/main
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.5061659Z Switched to a new branch 'main'
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.5124063Z branch 'main' set up to track 'origin/main'.
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.5172224Z ##[endgroup]
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.5617171Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+test-and-build	Run actions/checkout@v5	2026-08-21T23:06:21.5877528Z 0c6c2a563673dcddc8d2b00d4668ec3ab20fb2ee
+test-and-build	Run actions/setup-dotnet@v5	﻿2026-08-21T23:06:21.6330433Z ##[group]Run actions/setup-dotnet@v5
+test-and-build	Run actions/setup-dotnet@v5	2026-08-21T23:06:21.6330902Z with:
+test-and-build	Run actions/setup-dotnet@v5	2026-08-21T23:06:21.6331138Z   dotnet-version: 10.0.x
+test-and-build	Run actions/setup-dotnet@v5	2026-08-21T23:06:21.6331415Z   cache: false
+test-and-build	Run actions/setup-dotnet@v5	2026-08-21T23:06:21.6331639Z ##[endgroup]
+test-and-build	Run actions/setup-dotnet@v5	2026-08-21T23:06:21.9047000Z [command]"C:\Program Files\PowerShell\7\pwsh.exe" -NoLogo -Sta -NoProfile -NonInteractive -ExecutionPolicy Unrestricted -Command & 'D:\a\_actions\actions\setup-dotnet\v5\externals\install-dotnet.ps1' -SkipNonVersionedFiles -Runtime dotnet -Channel LTS
+test-and-build	Run actions/setup-dotnet@v5	2026-08-21T23:06:23.2604260Z dotnet-install: .NET Core Runtime with version '10.0.11' is already installed.
+test-and-build	Run actions/setup-dotnet@v5	2026-08-21T23:06:23.4131907Z [command]"C:\Program Files\PowerShell\7\pwsh.exe" -NoLogo -Sta -NoProfile -NonInteractive -ExecutionPolicy Unrestricted -Command & 'D:\a\_actions\actions\setup-dotnet\v5\externals\install-dotnet.ps1' -SkipNonVersionedFiles -Channel 10.0
+test-and-build	Run actions/setup-dotnet@v5	2026-08-21T23:06:24.2459121Z dotnet-install: .NET Core SDK with version '10.0.400' is already installed.
+test-and-build	Restore	﻿2026-08-21T23:06:24.3475383Z ##[group]Run dotnet restore EnteAuthCommunity.slnx
+test-and-build	Restore	2026-08-21T23:06:24.3476027Z [36;1mdotnet restore EnteAuthCommunity.slnx[0m
+test-and-build	Restore	2026-08-21T23:06:24.5145682Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+test-and-build	Restore	2026-08-21T23:06:24.5146174Z env:
+test-and-build	Restore	2026-08-21T23:06:24.5146419Z   DOTNET_ROOT: C:\Program Files\dotnet
+test-and-build	Restore	2026-08-21T23:06:24.5146736Z ##[endgroup]
+test-and-build	Restore	2026-08-21T23:06:32.3300726Z   Determining projects to restore...
+test-and-build	Restore	2026-08-21T23:06:40.8004905Z   Restored D:\a\ente\ente\tests\Ente.Auth.Infrastructure.Tests\Ente.Auth.Infrastructure.Tests.csproj (in 7.05 sec).
+test-and-build	Restore	2026-08-21T23:06:40.8027134Z   Restored D:\a\ente\ente\src\Ente.Auth.Infrastructure\Ente.Auth.Infrastructure.csproj (in 7.05 sec).
+test-and-build	Restore	2026-08-21T23:06:40.8028421Z   Restored D:\a\ente\ente\tests\Ente.Auth.Core.Tests\Ente.Auth.Core.Tests.csproj (in 7.05 sec).
+test-and-build	Restore	2026-08-21T23:06:40.8090103Z   Restored D:\a\ente\ente\src\Ente.Auth.Core\Ente.Auth.Core.csproj (in 2 ms).
+test-and-build	Restore	2026-08-21T23:07:20.3371413Z   Restored D:\a\ente\ente\src\Ente.Auth.App\Ente.Auth.App.csproj (in 46.61 sec).
+test-and-build	Test core	﻿2026-08-21T23:07:20.4908091Z ##[group]Run dotnet test tests/Ente.Auth.Core.Tests/Ente.Auth.Core.Tests.csproj --no-restore
+test-and-build	Test core	2026-08-21T23:07:20.4908883Z [36;1mdotnet test tests/Ente.Auth.Core.Tests/Ente.Auth.Core.Tests.csproj --no-restore[0m
+test-and-build	Test core	2026-08-21T23:07:20.5007316Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+test-and-build	Test core	2026-08-21T23:07:20.5007655Z env:
+test-and-build	Test core	2026-08-21T23:07:20.5007852Z   DOTNET_ROOT: C:\Program Files\dotnet
+test-and-build	Test core	2026-08-21T23:07:20.5008108Z ##[endgroup]
+test-and-build	Test core	2026-08-21T23:07:29.2520710Z   Ente.Auth.Core -> D:\a\ente\ente\src\Ente.Auth.Core\bin\Debug\net10.0\Ente.Auth.Core.dll
+test-and-build	Test core	2026-08-21T23:07:29.8610207Z   Ente.Auth.Core.Tests -> D:\a\ente\ente\tests\Ente.Auth.Core.Tests\bin\Debug\net10.0\Ente.Auth.Core.Tests.dll
+test-and-build	Test core	2026-08-21T23:07:29.8750736Z Test run for D:\a\ente\ente\tests\Ente.Auth.Core.Tests\bin\Debug\net10.0\Ente.Auth.Core.Tests.dll (.NETCoreApp,Version=v10.0)
+test-and-build	Test core	2026-08-21T23:07:30.5843657Z A total of 1 test files matched the specified pattern.
+test-and-build	Test core	2026-08-21T23:07:31.7091857Z 
+test-and-build	Test core	2026-08-21T23:07:31.7142059Z Passed!  - Failed:     0, Passed:    28, Skipped:     0, Total:    28, Duration: 137 ms - Ente.Auth.Core.Tests.dll (net10.0)
+test-and-build	Test infrastructure	﻿2026-08-21T23:07:32.1885351Z ##[group]Run dotnet test tests/Ente.Auth.Infrastructure.Tests/Ente.Auth.Infrastructure.Tests.csproj --no-restore
+test-and-build	Test infrastructure	2026-08-21T23:07:32.1886760Z [36;1mdotnet test tests/Ente.Auth.Infrastructure.Tests/Ente.Auth.Infrastructure.Tests.csproj --no-restore[0m
+test-and-build	Test infrastructure	2026-08-21T23:07:32.2031737Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+test-and-build	Test infrastructure	2026-08-21T23:07:32.2032226Z env:
+test-and-build	Test infrastructure	2026-08-21T23:07:32.2032489Z   DOTNET_ROOT: C:\Program Files\dotnet
+test-and-build	Test infrastructure	2026-08-21T23:07:32.2032842Z ##[endgroup]
+test-and-build	Test infrastructure	2026-08-21T23:07:34.4830593Z   Ente.Auth.Core -> D:\a\ente\ente\src\Ente.Auth.Core\bin\Debug\net10.0\Ente.Auth.Core.dll
+test-and-build	Test infrastructure	2026-08-21T23:07:36.2890310Z   Ente.Auth.Infrastructure -> D:\a\ente\ente\src\Ente.Auth.Infrastructure\bin\Debug\net10.0\Ente.Auth.Infrastructure.dll
+test-and-build	Test infrastructure	2026-08-21T23:07:36.8818781Z   Ente.Auth.Infrastructure.Tests -> D:\a\ente\ente\tests\Ente.Auth.Infrastructure.Tests\bin\Debug\net10.0\Ente.Auth.Infrastructure.Tests.dll
+test-and-build	Test infrastructure	2026-08-21T23:07:36.9016634Z Test run for D:\a\ente\ente\tests\Ente.Auth.Infrastructure.Tests\bin\Debug\net10.0\Ente.Auth.Infrastructure.Tests.dll (.NETCoreApp,Version=v10.0)
+test-and-build	Test infrastructure	2026-08-21T23:07:37.1632680Z A total of 1 test files matched the specified pattern.
+test-and-build	Test infrastructure	2026-08-21T23:07:41.7756276Z 
+test-and-build	Test infrastructure	2026-08-21T23:07:41.7807112Z Passed!  - Failed:     0, Passed:    26, Skipped:     0, Total:    26, Duration: 3 s - Ente.Auth.Infrastructure.Tests.dll (net10.0)
+test-and-build	Publish Windows app	﻿2026-08-21T23:07:42.2361337Z ##[group]Run dotnet publish src/Ente.Auth.App/Ente.Auth.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:WindowsPackageType=None -p:WindowsAppSDKSelfContained=true -o publish_output
+test-and-build	Publish Windows app	2026-08-21T23:07:42.2363203Z [36;1mdotnet publish src/Ente.Auth.App/Ente.Auth.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:WindowsPackageType=None -p:WindowsAppSDKSelfContained=true -o publish_output[0m
+test-and-build	Publish Windows app	2026-08-21T23:07:42.2463220Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+test-and-build	Publish Windows app	2026-08-21T23:07:42.2463562Z env:
+test-and-build	Publish Windows app	2026-08-21T23:07:42.2463751Z   DOTNET_ROOT: C:\Program Files\dotnet
+test-and-build	Publish Windows app	2026-08-21T23:07:42.2463999Z ##[endgroup]
+test-and-build	Publish Windows app	2026-08-21T23:07:43.4669090Z   Determining projects to restore...
+test-and-build	Publish Windows app	2026-08-21T23:07:44.5068556Z   Restored D:\a\ente\ente\src\Ente.Auth.Infrastructure\Ente.Auth.Infrastructure.csproj (in 475 ms).
+test-and-build	Publish Windows app	2026-08-21T23:07:44.5071134Z   Restored D:\a\ente\ente\src\Ente.Auth.Core\Ente.Auth.Core.csproj (in 467 ms).
+test-and-build	Publish Windows app	2026-08-21T23:07:44.5674791Z   Restored D:\a\ente\ente\src\Ente.Auth.App\Ente.Auth.App.csproj (in 557 ms).
+test-and-build	Publish Windows app	2026-08-21T23:07:44.7425496Z C:\Users\runneradmin\.nuget\packages\microsoft.windowsappsdk.base\2.0.4\buildTransitive\Microsoft.WindowsAppSDK.SingleFile.targets(15,9): error : PublishSingleFile requires EnableMsixTooling for embedded resources.pri generation: [D:\a\ente\ente\src\Ente.Auth.App\Ente.Auth.App.csproj]
+test-and-build	Publish Windows app	2026-08-21T23:07:44.7433204Z C:\Users\runneradmin\.nuget\packages\microsoft.windowsappsdk.base\2.0.4\buildTransitive\Microsoft.WindowsAppSDK.SingleFile.targets(15,9): error :     <PropertyGroup> [D:\a\ente\ente\src\Ente.Auth.App\Ente.Auth.App.csproj]
+test-and-build	Publish Windows app	2026-08-21T23:07:44.7439901Z C:\Users\runneradmin\.nuget\packages\microsoft.windowsappsdk.base\2.0.4\buildTransitive\Microsoft.WindowsAppSDK.SingleFile.targets(15,9): error :         <EnableMsixTooling>true</EnableMsixTooling> [D:\a\ente\ente\src\Ente.Auth.App\Ente.Auth.App.csproj]
+test-and-build	Publish Windows app	2026-08-21T23:07:44.7444863Z C:\Users\runneradmin\.nuget\packages\microsoft.windowsappsdk.base\2.0.4\buildTransitive\Microsoft.WindowsAppSDK.SingleFile.targets(15,9): error :     </PropertyGroup> [D:\a\ente\ente\src\Ente.Auth.App\Ente.Auth.App.csproj]
+test-and-build	Publish Windows app	2026-08-21T23:07:44.7449654Z C:\Users\runneradmin\.nuget\packages\microsoft.windowsappsdk.base\2.0.4\buildTransitive\Microsoft.WindowsAppSDK.SingleFile.targets(15,9): error :  [D:\a\ente\ente\src\Ente.Auth.App\Ente.Auth.App.csproj]
+test-and-build	Publish Windows app	2026-08-21T23:07:45.2060615Z ##[error]Process completed with exit code 1.
+test-and-build	Post Run actions/checkout@v5	﻿2026-08-21T23:07:45.2471676Z Post job cleanup.
+test-and-build	Post Run actions/checkout@v5	2026-08-21T23:07:45.5577782Z [command]"C:\Program Files\Git\bin\git.exe" version
+test-and-build	Post Run actions/checkout@v5	2026-08-21T23:07:45.6040611Z git version 2.55.0.windows.4
+test-and-build	Post Run actions/checkout@v5	2026-08-21T23:07:45.6208070Z Temporarily overriding HOME='D:\a\_temp\488ace96-380e-4e71-9aee-0fa83f46bf3f' before making global git config changes
+test-and-build	Post Run actions/checkout@v5	2026-08-21T23:07:45.6211724Z Adding repository directory to the temporary git global config as a safe directory
+test-and-build	Post Run actions/checkout@v5	2026-08-21T23:07:45.6213344Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\ente\ente
+test-and-build	Post Run actions/checkout@v5	2026-08-21T23:07:45.6675835Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+test-and-build	Post Run actions/checkout@v5	2026-08-21T23:07:45.7156994Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+test-and-build	Post Run actions/checkout@v5	2026-08-21T23:07:46.4417471Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+test-and-build	Post Run actions/checkout@v5	2026-08-21T23:07:46.4705461Z http.https://github.com/.extraheader
+test-and-build	Post Run actions/checkout@v5	2026-08-21T23:07:46.4753942Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+test-and-build	Post Run actions/checkout@v5	2026-08-21T23:07:46.5068198Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+test-and-build	Post Run actions/checkout@v5	2026-08-21T23:07:47.1857181Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+test-and-build	Post Run actions/checkout@v5	2026-08-21T23:07:47.2188718Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+test-and-build	Complete job	﻿2026-08-21T23:07:47.8146552Z Cleaning up orphan processes
+test-and-build	Complete job	2026-08-21T23:07:47.8443967Z Terminate orphan process: pid (7216) (dotnet)
+test-and-build	Complete job	2026-08-21T23:07:47.8537396Z Terminate orphan process: pid (1684) (dotnet)
+test-and-build	Complete job	2026-08-21T23:07:47.8746107Z Terminate orphan process: pid (6592) (dotnet)
+test-and-build	Complete job	2026-08-21T23:07:47.8832415Z Terminate orphan process: pid (7164) (conhost)
+test-and-build	Complete job	2026-08-21T23:07:47.9183913Z Terminate orphan process: pid (3284) (VBCSCompiler)
+test-and-build	Complete job	2026-08-21T23:07:47.9247487Z Terminate orphan process: pid (8488) (conhost)

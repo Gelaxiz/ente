@@ -179,6 +179,9 @@ public sealed partial class App : Application
 
     public static void ShowMainWindow() => _ = ShowMainWindowAsync();
 
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
     private static async Task ShowQuickPanelAsync()
     {
         if (_quickViewModel is null) return;
@@ -194,6 +197,7 @@ public sealed partial class App : Application
         await _quickPanel.PrepareAsync();
         _quickPanel.Show();
         _quickPanel.Activate();
+        SetForegroundWindow(WinRT.Interop.WindowNative.GetWindowHandle(_quickPanel));
     }
 
     public static void Lock()
@@ -225,7 +229,7 @@ public sealed partial class App : Application
         if (CurrentSettings.EnableGlobalShortcut)
         {
             _hiddenHotkeyWindow ??= new Window();
-            GlobalHotkey.Register(_hiddenHotkeyWindow, () => _ = ShowQuickPanelAsync());
+            GlobalHotkey.Register(_hiddenHotkeyWindow, CurrentSettings.GlobalShortcut, () => _ = ShowQuickPanelAsync());
         }
         else
         {
