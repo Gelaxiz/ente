@@ -47,4 +47,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           Compress-Archive -Path publish_output\* -DestinationPath EnteAuth-Portable.zip
-          gh release create v1.0.5 Output/EnteAuth-Setup.exe EnteAuth-Portable.zip -t "v1.0.5" --generate-notes || gh release upload v1.0.5 Output/EnteAuth-Setup.exe EnteAuth-Portable.zip --clobber
+          gh release create v1.0.6 Output/EnteAuth-Setup.exe EnteAuth-Portable.zip -t "v1.0.6" --generate-notes || gh release upload v1.0.6 Output/EnteAuth-Setup.exe EnteAuth-Portable.zip --clobber

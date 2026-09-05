@@ -13,16 +13,18 @@ public sealed class MainViewModel : ObservableObject
     private readonly IOtpRepository _repository;
     private readonly IOtpGenerator _generator;
     private readonly ClipboardService _clipboard;
+    private readonly TimeProvider _timeProvider;
     private string _searchText = string.Empty;
     private bool _isEmpty;
     private string _statusMessage = string.Empty;
     private IReadOnlyList<OtpAccount> _accounts = [];
 
-    public MainViewModel(IOtpRepository repository, IOtpGenerator generator, ClipboardService clipboard)
+    public MainViewModel(IOtpRepository repository, IOtpGenerator generator, ClipboardService clipboard, TimeProvider? timeProvider = null)
     {
         _repository = repository;
         _generator = generator;
         _clipboard = clipboard;
+        _timeProvider = timeProvider ?? TimeProvider.System;
         CopyCommand = new AsyncRelayCommand<OtpCodeViewModel>(CopyAsync);
     }
 
@@ -75,7 +77,7 @@ public sealed class MainViewModel : ObservableObject
         foreach (var account in filtered)
         {
             var code = new OtpCodeViewModel(account, _generator) { IsHidden = App.CurrentSettings.HideCodes };
-            code.Refresh(DateTimeOffset.UtcNow);
+            code.Refresh(_timeProvider.GetUtcNow());
             Codes.Add(code);
         }
         IsEmpty = Codes.Count == 0;
@@ -83,7 +85,7 @@ public sealed class MainViewModel : ObservableObject
 
     public void Tick()
     {
-        var now = DateTimeOffset.UtcNow;
+        var now = _timeProvider.GetUtcNow();
         foreach (var code in Codes) code.Refresh(now);
     }
 
@@ -93,6 +95,14 @@ public sealed class MainViewModel : ObservableObject
         OnPropertyChanged(nameof(SearchText));
         Codes.Clear();
         IsEmpty = true;
+    }
+
+    public void ReportClockCorrection(TimeSpan correction)
+    {
+        if (correction.Duration() < TimeSpan.FromSeconds(2)) return;
+        var direction = correction > TimeSpan.Zero ? "ahead" : "behind";
+        StatusMessage = $"Windows time is {correction.Duration().TotalSeconds:F0}s {direction}. Codes are using verified network time.";
+        Tick();
     }
 
     public async Task AddFromUriAsync(string uri)
@@ -134,14 +144,14 @@ public sealed class MainViewModel : ObservableObject
         {
             // Capture one freshly generated value. This prevents a click close
             // to a TOTP boundary from copying the code that just expired.
-            code.Refresh(DateTimeOffset.UtcNow);
+            code.Refresh(_timeProvider.GetUtcNow());
             var valueToCopy = code.Code;
             await _clipboard.CopyAsync(valueToCopy, App.CurrentSettings.ClipboardClearSeconds);
             StatusMessage = $"Copied code for {code.Issuer}. The clipboard will clear automatically.";
             var updated = code.Account with
             {
                 Counter = code.Account.Kind == OtpKind.Hotp ? code.Account.Counter + 1 : code.Account.Counter,
-                LastUsedAt = DateTimeOffset.UtcNow,
+                LastUsedAt = _timeProvider.GetUtcNow(),
             };
             await _repository.UpsertAsync(updated);
             await ReloadAsync();

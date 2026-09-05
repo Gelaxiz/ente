@@ -13,6 +13,10 @@ public sealed partial class QuickPanelWindow : Window
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
 
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
     public QuickPanelWindow(MainViewModel viewModel)
     {
         InitializeComponent();
@@ -72,14 +76,17 @@ public sealed partial class QuickPanelWindow : Window
         // WinUI can report activation before the popup's visual tree is ready.
         // Retry briefly after Show/SetForegroundWindow so tray and hotkey opens
         // consistently put keyboard input in search.
-        for (var attempt = 0; attempt < 3; attempt++)
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+        for (var attempt = 0; attempt < 5; attempt++)
         {
-            await Task.Delay(attempt == 0 ? 40 : 70);
-            if (!App.CurrentSettings.FocusSearchOnOpen || SearchBox.Focus(FocusState.Keyboard)) break;
+            SetForegroundWindow(hwnd);
+            await Task.Delay(attempt == 0 ? 40 : 80);
+            if (!App.CurrentSettings.FocusSearchOnOpen) break;
+            if (SearchBox.Focus(FocusState.Keyboard) && GetForegroundWindow() == hwnd) break;
         }
 
         _isOpening = false;
-        _focusGraceTicks = GetForegroundWindow() == WinRT.Interop.WindowNative.GetWindowHandle(this) ? 3 : 0;
+        _focusGraceTicks = GetForegroundWindow() == hwnd ? 3 : 0;
     }
 
     private async void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)

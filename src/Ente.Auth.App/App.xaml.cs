@@ -9,6 +9,7 @@ using Ente.Auth.Infrastructure.Security;
 using Ente.Auth.Infrastructure.Storage;
 using Ente.Auth.Infrastructure.Backup;
 using Ente.Auth.Infrastructure.Sync;
+using Ente.Auth.Infrastructure.Time;
 using System.Security.Cryptography;
 using H.NotifyIcon;
 using Microsoft.UI.Windowing;
@@ -40,6 +41,8 @@ public sealed partial class App : Application
     private static readonly SemaphoreSlim PresenceGateLock = new(1, 1);
     private static readonly SemaphoreSlim SyncLifecycleGate = new(1, 1);
     private static CancellationTokenSource _syncCancellation = new();
+    private static readonly CancellationTokenSource ClockCancellation = new();
+    private static NetworkCorrectedTimeProvider? _clock;
     private static bool _isLocked;
 
     public static AppSettings CurrentSettings { get; private set; } = new();
@@ -71,8 +74,11 @@ public sealed partial class App : Application
         IOtpRepository repository = new SqliteOtpRepository(connectionString, protector);
         var generator = new OtpGenerator();
         var clipboard = new ClipboardService();
-        _viewModel = new MainViewModel(repository, generator, clipboard);
-        _quickViewModel = new MainViewModel(repository, generator, clipboard);
+        var clockHttp = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+        _clock = new NetworkCorrectedTimeProvider(clockHttp, new Uri("https://api.ente.io/"));
+        _viewModel = new MainViewModel(repository, generator, clipboard, _clock);
+        _quickViewModel = new MainViewModel(repository, generator, clipboard, _clock);
+        _ = MaintainClockCorrectionAsync(_clock, ClockCancellation.Token);
 
         var crypto = new LibsodiumEnteCryptoCodec();
         _sessionStore = new DpapiEnteSessionStore(Path.Combine(dataPath, "ente-session.bin"), protector);
@@ -135,6 +141,24 @@ public sealed partial class App : Application
         exit.ExecuteRequested += (_, _) => Quit();
         _trayIcon = (TaskbarIcon)app.Resources["TrayIcon"];
         _trayIcon.ForceCreate();
+    }
+
+    private static async Task MaintainClockCorrectionAsync(
+        NetworkCorrectedTimeProvider clock,
+        CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            var result = await clock.SynchronizeAsync(cancellationToken);
+            if (result.Success)
+            {
+                _viewModel?.ReportClockCorrection(result.Correction);
+                _quickViewModel?.ReportClockCorrection(result.Correction);
+            }
+
+            try { await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken); }
+            catch (OperationCanceledException) { break; }
+        }
     }
 
 
@@ -369,6 +393,7 @@ public sealed partial class App : Application
     private static void Quit()
     {
         IsQuitting = true;
+        ClockCancellation.Cancel();
         _trayIcon?.Dispose();
         _quickPanel?.Close();
         _presenceFailureWindow?.Close();
