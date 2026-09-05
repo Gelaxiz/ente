@@ -43,6 +43,7 @@ public sealed partial class App : Application
     private static CancellationTokenSource _syncCancellation = new();
     private static readonly CancellationTokenSource ClockCancellation = new();
     private static NetworkCorrectedTimeProvider? _clock;
+    private static Task<ClockSynchronizationResult>? _initialClockSynchronization;
     private static bool _isLocked;
 
     public static AppSettings CurrentSettings { get; private set; } = new();
@@ -78,7 +79,8 @@ public sealed partial class App : Application
         _clock = new NetworkCorrectedTimeProvider(clockHttp, new Uri("https://api.ente.io/"));
         _viewModel = new MainViewModel(repository, generator, clipboard, _clock);
         _quickViewModel = new MainViewModel(repository, generator, clipboard, _clock);
-        _ = MaintainClockCorrectionAsync(_clock, ClockCancellation.Token);
+        _initialClockSynchronization = _clock.SynchronizeAsync(ClockCancellation.Token);
+        _ = MaintainClockCorrectionAsync(_clock, _initialClockSynchronization, ClockCancellation.Token);
 
         var crypto = new LibsodiumEnteCryptoCodec();
         _sessionStore = new DpapiEnteSessionStore(Path.Combine(dataPath, "ente-session.bin"), protector);
@@ -145,22 +147,38 @@ public sealed partial class App : Application
 
     private static async Task MaintainClockCorrectionAsync(
         NetworkCorrectedTimeProvider clock,
+        Task<ClockSynchronizationResult> initialSynchronization,
         CancellationToken cancellationToken)
     {
+        ClockSynchronizationResult initialResult;
+        try { initialResult = await initialSynchronization; }
+        catch (OperationCanceledException) { return; }
+        if (initialResult.Success)
+        {
+            _viewModel?.ReportClockCorrection(initialResult.Correction);
+            _quickViewModel?.ReportClockCorrection(initialResult.Correction);
+        }
+
         while (!cancellationToken.IsCancellationRequested)
         {
+            try { await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken); }
+            catch (OperationCanceledException) { break; }
+
             var result = await clock.SynchronizeAsync(cancellationToken);
             if (result.Success)
             {
                 _viewModel?.ReportClockCorrection(result.Correction);
                 _quickViewModel?.ReportClockCorrection(result.Correction);
             }
-
-            try { await Task.Delay(TimeSpan.FromMinutes(5), cancellationToken); }
-            catch (OperationCanceledException) { break; }
         }
     }
 
+    private static async Task WaitForInitialClockSynchronizationAsync()
+    {
+        if (_initialClockSynchronization is not { } synchronization) return;
+        try { await synchronization; }
+        catch (OperationCanceledException) { }
+    }
 
 
     public static async Task ShowMainWindowAsync()
@@ -172,6 +190,7 @@ public sealed partial class App : Application
             return;
         }
         _isLocked = false;
+        await WaitForInitialClockSynchronizationAsync();
         await _viewModel.ReloadAsync();
         _mainWindow ??= new MainWindow(_viewModel, new EnteEncryptedBackupCodec(new LibsodiumEnteCryptoCodec()));
         if (_mainWindow.AppWindow.Presenter is OverlappedPresenter
@@ -188,6 +207,7 @@ public sealed partial class App : Application
     private static async Task ShowMainWindowMinimizedAsync()
     {
         if (_viewModel is null) return;
+        await WaitForInitialClockSynchronizationAsync();
         await _viewModel.ReloadAsync();
         _mainWindow ??= new MainWindow(_viewModel, new EnteEncryptedBackupCodec(new LibsodiumEnteCryptoCodec()));
         if (_mainWindow.AppWindow.Presenter is OverlappedPresenter presenter)
@@ -224,6 +244,7 @@ public sealed partial class App : Application
             return;
         }
         _isLocked = false;
+        await WaitForInitialClockSynchronizationAsync();
         await _quickViewModel.ReloadAsync();
         _quickPanel ??= new QuickPanelWindow(_quickViewModel);
         await _quickPanel.PrepareAsync();

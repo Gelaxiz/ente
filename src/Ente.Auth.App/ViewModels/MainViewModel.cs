@@ -99,10 +99,10 @@ public sealed class MainViewModel : ObservableObject
 
     public void ReportClockCorrection(TimeSpan correction)
     {
-        if (correction.Duration() < TimeSpan.FromSeconds(2)) return;
-        var direction = correction > TimeSpan.Zero ? "ahead" : "behind";
-        StatusMessage = $"Windows time is {correction.Duration().TotalSeconds:F0}s {direction}. Codes are using verified network time.";
         Tick();
+        if (correction.Duration() < TimeSpan.FromSeconds(2)) return;
+        var direction = correction > TimeSpan.Zero ? "behind" : "ahead";
+        StatusMessage = $"Windows time is {correction.Duration().TotalSeconds:F0}s {direction}. Codes are using verified network time.";
     }
 
     public async Task AddFromUriAsync(string uri)
