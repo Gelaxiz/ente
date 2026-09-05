@@ -206,6 +206,7 @@ public sealed partial class App : Application
         _quickPanel.Show();
         _quickPanel.Activate();
         SetForegroundWindow(WinRT.Interop.WindowNative.GetWindowHandle(_quickPanel));
+        await _quickPanel.CompleteOpeningAsync();
     }
 
     public static void Lock()

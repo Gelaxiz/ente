@@ -75,7 +75,7 @@ public sealed class MainViewModel : ObservableObject
         foreach (var account in filtered)
         {
             var code = new OtpCodeViewModel(account, _generator) { IsHidden = App.CurrentSettings.HideCodes };
-            code.Refresh(DateTimeOffset.Now);
+            code.Refresh(DateTimeOffset.UtcNow);
             Codes.Add(code);
         }
         IsEmpty = Codes.Count == 0;
@@ -83,7 +83,7 @@ public sealed class MainViewModel : ObservableObject
 
     public void Tick()
     {
-        var now = DateTimeOffset.Now;
+        var now = DateTimeOffset.UtcNow;
         foreach (var code in Codes) code.Refresh(now);
     }
 
@@ -132,8 +132,12 @@ public sealed class MainViewModel : ObservableObject
         if (code is null) return;
         try
         {
-            await _clipboard.CopyAsync(code.Code, App.CurrentSettings.ClipboardClearSeconds);
-            StatusMessage = "Copied. The clipboard will clear automatically.";
+            // Capture one freshly generated value. This prevents a click close
+            // to a TOTP boundary from copying the code that just expired.
+            code.Refresh(DateTimeOffset.UtcNow);
+            var valueToCopy = code.Code;
+            await _clipboard.CopyAsync(valueToCopy, App.CurrentSettings.ClipboardClearSeconds);
+            StatusMessage = $"Copied code for {code.Issuer}. The clipboard will clear automatically.";
             var updated = code.Account with
             {
                 Counter = code.Account.Kind == OtpKind.Hotp ? code.Account.Counter + 1 : code.Account.Counter,

@@ -38,4 +38,32 @@ public sealed class OtpGeneratorTests
             "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ", OtpKind.Totp, Digits: 8);
         Assert.Equal(expected, _generator.Generate(account, DateTimeOffset.FromUnixTimeSeconds(unixSeconds)).Code);
     }
+
+    [Fact]
+    public void Totp_uses_the_same_instant_regardless_of_local_time_zone()
+    {
+        var account = new OtpAccount(Guid.NewGuid(), "RFC", "test",
+            "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ", OtpKind.Totp, Digits: 8);
+        var utc = DateTimeOffset.FromUnixTimeSeconds(1_234_567_890);
+        var helsinki = utc.ToOffset(TimeSpan.FromHours(3));
+
+        Assert.Equal(_generator.Generate(account, utc), _generator.Generate(account, helsinki));
+    }
+
+    [Fact]
+    public void Totp_changes_exactly_at_the_period_boundary()
+    {
+        var account = new OtpAccount(Guid.NewGuid(), "Boundary", "test",
+            "JBSWY3DPEHPK3PXP", OtpKind.Totp, PeriodSeconds: 30);
+        var justBefore = DateTimeOffset.FromUnixTimeSeconds(1_700_000_009);
+        var atBoundary = justBefore.AddSeconds(1);
+
+        var oldSnapshot = _generator.Generate(account, justBefore);
+        var newSnapshot = _generator.Generate(account, atBoundary);
+
+        Assert.Equal(1, oldSnapshot.SecondsRemaining);
+        Assert.Equal(30, newSnapshot.SecondsRemaining);
+        Assert.NotEqual(oldSnapshot.Counter, newSnapshot.Counter);
+        Assert.NotEqual(oldSnapshot.Code, newSnapshot.Code);
+    }
 }

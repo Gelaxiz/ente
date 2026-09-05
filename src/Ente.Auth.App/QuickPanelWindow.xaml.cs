@@ -8,6 +8,7 @@ public sealed partial class QuickPanelWindow : Window
 {
     private readonly DispatcherTimer _timer = new() { Interval = TimeSpan.FromMilliseconds(200) };
     private int _focusGraceTicks;
+    private bool _isOpening;
 
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
@@ -30,17 +31,15 @@ public sealed partial class QuickPanelWindow : Window
         {
             if (args.WindowActivationState == WindowActivationState.Deactivated)
             {
+                if (_isOpening) return;
                 _timer.Stop();
                 this.Hide();
-            }
-            else if (App.CurrentSettings.FocusSearchOnOpen)
-            {
-                DispatcherQueue.TryEnqueue(() => SearchBox.Focus(FocusState.Keyboard));
             }
         };
         _timer.Tick += (_, _) =>
         {
             ((MainViewModel)Root.DataContext).Tick();
+            if (_isOpening) return;
             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             if (GetForegroundWindow() != hwnd)
             {
@@ -59,6 +58,7 @@ public sealed partial class QuickPanelWindow : Window
 
     public async Task PrepareAsync()
     {
+        _isOpening = true;
         _focusGraceTicks = 0;
         var viewModel = (MainViewModel)Root.DataContext;
         viewModel.SearchText = string.Empty;
@@ -67,9 +67,27 @@ public sealed partial class QuickPanelWindow : Window
         WindowSizing.PlaceAtWorkAreaBottomRight(this, 420, 560, 16);
     }
 
+    public async Task CompleteOpeningAsync()
+    {
+        // WinUI can report activation before the popup's visual tree is ready.
+        // Retry briefly after Show/SetForegroundWindow so tray and hotkey opens
+        // consistently put keyboard input in search.
+        for (var attempt = 0; attempt < 3; attempt++)
+        {
+            await Task.Delay(attempt == 0 ? 40 : 70);
+            if (!App.CurrentSettings.FocusSearchOnOpen || SearchBox.Focus(FocusState.Keyboard)) break;
+        }
+
+        _isOpening = false;
+        _focusGraceTicks = GetForegroundWindow() == WinRT.Interop.WindowNative.GetWindowHandle(this) ? 3 : 0;
+    }
+
     private async void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
         var viewModel = (MainViewModel)Root.DataContext;
+        // QuerySubmitted may run before the two-way Text binding has delivered
+        // its final value. Filter explicitly before choosing the top result.
+        viewModel.SearchText = args.QueryText ?? sender.Text ?? string.Empty;
         if (viewModel.Codes.FirstOrDefault() is { } first)
         {
             await viewModel.CopyCommand.ExecuteAsync(first);
