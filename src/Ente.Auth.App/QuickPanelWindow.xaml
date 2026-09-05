@@ -26,7 +26,8 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Button HorizontalContentAlignment="Stretch" MinHeight="48" Padding="10" Margin="0,1" Background="Transparent" BorderThickness="0"
-                                Click="CopyCode_Click" DoubleTapped="Code_DoubleTapped" Tag="{Binding}" ToolTipService.ToolTip="Copy code"
+                                Click="CopyCode_Click" DoubleTapped="Code_DoubleTapped" RightTapped="Code_RightTapped" Tag="{Binding}" ToolTipService.ToolTip="Copy code; right-click to reveal"
+                                AutomationProperties.HelpText="Right-click to reveal this code"
                                 AutomationProperties.Name="{Binding AutomationName}">
                             <Grid ColumnSpacing="12">
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
@@ -56,7 +57,8 @@
                 <GridView.ItemTemplate>
                     <DataTemplate>
                         <Button HorizontalContentAlignment="Stretch" MinHeight="50" Width="174" Padding="6" Margin="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4"
-                                Click="CopyCode_Click" DoubleTapped="Code_DoubleTapped" Tag="{Binding}" ToolTipService.ToolTip="Copy code">
+                                Click="CopyCode_Click" DoubleTapped="Code_DoubleTapped" RightTapped="Code_RightTapped" Tag="{Binding}" ToolTipService.ToolTip="Copy code; right-click to reveal"
+                                AutomationProperties.HelpText="Right-click to reveal this code">
                             <StackPanel Spacing="2">
                                 <TextBlock Text="{Binding Issuer}" FontWeight="SemiBold" FontSize="11" TextTrimming="CharacterEllipsis" />
                                 <TextBlock Text="{Binding DisplayCode}" FontFamily="Cascadia Mono" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center" />

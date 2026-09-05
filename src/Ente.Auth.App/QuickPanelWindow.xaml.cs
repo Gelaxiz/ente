@@ -120,6 +120,15 @@ public sealed partial class QuickPanelWindow : Window
         }
     }
 
+    private void Code_RightTapped(object sender, RightTappedRoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { Tag: OtpCodeViewModel code })
+        {
+            code.IsHidden = false;
+            e.Handled = true;
+        }
+    }
+
     private void OpenApp_Click(object sender, RoutedEventArgs e)
     {
         this.Hide();

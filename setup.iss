@@ -1,6 +1,6 @@
 [Setup]
 AppName=Ente Auth Community
-AppVersion=1.0.7
+AppVersion=1.0.8
 DefaultDirName={autopf}\EnteAuth
 DefaultGroupName=Ente Auth Community
 OutputDir=Output

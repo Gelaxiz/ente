@@ -162,6 +162,15 @@ public sealed partial class MainWindow : Window
         }
     }
 
+    private void Code_RightTapped(object sender, RightTappedRoutedEventArgs e)
+    {
+        if (sender is FrameworkElement { Tag: ViewModels.OtpCodeViewModel code })
+        {
+            code.IsHidden = false;
+            e.Handled = true;
+        }
+    }
+
     private void Navigation_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
         var tag = (args.SelectedItemContainer as NavigationViewItem)?.Tag?.ToString();
@@ -172,6 +181,7 @@ public sealed partial class MainWindow : Window
 
     private async void SearchBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
     {
+        ViewModel.SearchText = args.QueryText ?? sender.Text ?? string.Empty;
         if (ViewModel.Codes.FirstOrDefault() is { } first)
         {
             await ViewModel.CopyCommand.ExecuteAsync(first);

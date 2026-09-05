@@ -74,7 +74,8 @@
                             </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid Padding="12,10" ColumnSpacing="16" DoubleTapped="Code_DoubleTapped" Tag="{Binding}" Background="Transparent">
+                                    <Grid Padding="12,10" ColumnSpacing="16" DoubleTapped="Code_DoubleTapped" RightTapped="Code_RightTapped"
+                                          Tag="{Binding}" Background="Transparent" AutomationProperties.HelpText="Right-click to reveal this code">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="Auto" />
@@ -116,7 +117,9 @@
                             </GridView.ItemContainerStyle>
                             <GridView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid Padding="12,10" Margin="4" MinWidth="220" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4" DoubleTapped="Code_DoubleTapped" Tag="{Binding}">
+                                    <Grid Padding="12,10" Margin="4" MinWidth="220" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4"
+                                          DoubleTapped="Code_DoubleTapped" RightTapped="Code_RightTapped" Tag="{Binding}"
+                                          AutomationProperties.HelpText="Right-click to reveal this code">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
